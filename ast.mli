@@ -29,11 +29,3 @@ type expr =
   | UnOp     of unop * expr
   | Matrix   of expr list list
 
-(*Do we want a monad to keep track of the step by step????*)
-module A_Expr : Monad = struct
-    type 'a t = 'a * string
-    let bind (x,s1) f = 
-        let (y,s2) = f x in
-        (y,s1^s2)
-    let return x = (x, "")
-end
