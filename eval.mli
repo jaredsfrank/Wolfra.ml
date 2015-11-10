@@ -17,3 +17,6 @@ val eval: expr -> expr
  *                  ->    Mult (Float 5, Var x)
  *)
 val simplify: expr -> expr
+
+(*Main driving function that infintiely loops to accept input*)
+val main: unit -> unit
