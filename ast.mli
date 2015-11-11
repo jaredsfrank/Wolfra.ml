@@ -7,7 +7,7 @@ type constant = string
 (*binary operations*)
 type binop = 
     | Plus | Times | Minus | Divide | Pow
-
+ 
 (*unary operations*)
 type unop = 
     | Neg | Deriv | Integ | Sin | Cos | Log
