@@ -1,30 +1,30 @@
 open Ast
 
 
-let rec subst = failwith "TODO"
+let rec subst e = failwith "hey"
 
 let bin_op op e1 e2 =
     match op with
-    | Plus   -> failwith "TODO"
-    | Times  -> failwith "TODO"
-    | Minus  -> failwith "TODO"
-    | Divide -> failwith "TODO"
-    | Pow    -> failwith "TODO"
-    | Deriv  -> failwith "TODO"
-    | Integ  -> failwith "TODO"
+    | Plus   -> failwith "hey"
+    | Times  -> failwith "hey"
+    | Minus  -> failwith "hey"
+    | Divide -> failwith "hey"
+    | Pow    -> failwith "hey"
+    | Deriv  -> failwith "hey"
+    | Integ  -> failwith "hey"
 
 
 let un_op op e =
     match op with
-    | Neg       -> failwith "TODO"
-    | Sin       -> failwith "TODO"
-    | Cos       -> failwith "TODO"
-    | Log       -> failwith "TODO"
-    | Trans     -> failwith "TODO"
-    | Inv       -> failwith "TODO"
-    | EigVector -> failwith "TODO"
-    | EigValue  -> failwith "TODO"
-    | RRef      -> failwith "TODO"
+    | Neg       -> failwith "hey"
+    | Sin       -> failwith "hey"
+    | Cos       -> failwith "hey"
+    | Log       -> failwith "hey"
+    | Trans     -> failwith "hey"
+    | Inv       -> failwith "hey"
+    | EigVector -> failwith "hey"
+    | EigValue  -> failwith "hey"
+    | RRef      -> failwith "hey"
 
 
 let rec eval = function                   
@@ -35,4 +35,4 @@ let rec eval = function
     | UnOp   (op, e)      -> un_op op (eval e)
     | Matrix m            -> Matrix es
 
-let rec simplify = failwith "TODO"
+let rec simplify e = failwith "hey"
