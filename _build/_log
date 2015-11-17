@@ -1,0 +1,38 @@
+### Starting build.
+# Target: parse.ml.depends, tags: { extension:ml, file:parse.ml, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules parse.ml > parse.ml.depends
+# Target: parse.mli.depends, tags: { extension:mli, file:parse.mli, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules parse.mli > parse.mli.depends
+# Target: ast.mli.depends, tags: { extension:mli, file:ast.mli, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules ast.mli > ast.mli.depends
+# Target: ast.cmi, tags: { byte, compile, extension:mli, file:ast.mli, interf, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o ast.cmi ast.mli
+# Target: parse.cmi, tags: { byte, compile, extension:mli, file:parse.mli, interf, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o parse.cmi parse.mli
+# Target: lexer.mll, tags: { extension:mll, file:lexer.mll, lexer, ocaml, ocamllex, quiet }
+/home/vagrant/.opam/4.02.3/bin/ocamllex.opt -q lexer.mll # cached
+# Target: lexer.ml.depends, tags: { extension:ml, file:lexer.ml, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules lexer.ml > lexer.ml.depends
+# Target: parser.mly, tags: { extension:mly, file:parser.mly, infer, ocaml, ocamlyacc, parser, quiet }
+/home/vagrant/.opam/4.02.3/bin/ocamlyacc parser.mly
+# Target: parser.mli.depends, tags: { extension:mli, file:parser.mli, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules parser.mli > parser.mli.depends
+# Target: parser.cmi, tags: { byte, compile, extension:mli, file:parser.mli, interf, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o parser.cmi parser.mli
+# Target: lexer.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:lexer.cmo, file:lexer.ml, implem, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o lexer.cmo lexer.ml
+# Target: parse.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:parse.d.cmo, file:parse.ml, implem, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -g -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o parse.d.cmo parse.ml
+# Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules parser.ml > parser.ml.depends
+# Target: ast.ml.depends, tags: { extension:ml, file:ast.ml, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamldep -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -modules ast.ml > ast.ml.depends
+# Target: lexer.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:lexer.d.cmo, file:lexer.ml, implem, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -g -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o lexer.d.cmo lexer.ml
+# Target: parser.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:parser.d.cmo, file:parser.ml, implem, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -g -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o parser.d.cmo parser.ml
+# Target: ast.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:ast.d.cmo, file:ast.ml, implem, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(camlp4o) }
+ocamlfind ocamlc -c -warn-error +a-4-33-34-40-41-42-43-44 -g -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck -syntax camlp4o -o ast.d.cmo ast.ml
+# Target: parse.d.byte, tags: { byte, debug, dont_link_with, extension:byte, file:parse.d.byte, link, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), program, quiet }
+ocamlfind ocamlc assertions.cma -linkpkg -g -package oUnit -package pa_ounit -package pa_ounit.syntax -package qcheck ast.d.cmo parser.d.cmo lexer.d.cmo parse.d.cmo -o parse.d.byte
+# Compilation successful.
