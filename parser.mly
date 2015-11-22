@@ -15,20 +15,29 @@ let parse_error _ =
 %}
 
 
+%token POW
+%token MULT
+%token COS
+%token PI
+%token E
+%token SIN
+%token LOG
+%token DIV
 %token PLUS
 %token MINUS
-%token MULT
-%token POW
+%token DERIV
+%token DERIVE
 %token <string> VAR
 %token <string> STRING
-%token <string> INT
+%token <string> FLOAT
 %token LPAREN RPAREN
 %token EOF
 
+
+%nonassoc VAR LBRACE FLOAT LPAREN PI E
 %right POW
+%left MULT DIV COS SIN LOG DERIV DERIVE
 %left PLUS MINUS
-%left MULT
-%nonassoc VAR LBRACE INT LPAREN
 
 
 /* entry point */
@@ -40,14 +49,22 @@ let parse_error _ =
 %%
 
 expr:
-  | INT    {Float (float_of_string $1)}
-  | expr PLUS expr      { BinOp (Plus,   $1, $3) }
-  | expr MINUS expr     { BinOp (Minus,  $1, $3) }
-  | expr MULT expr      { BinOp (Times,  $1, $3) }
-  | expr POW expr    { BinOp (Pow, $1, $3) }
-  | VAR    { Var $1 }
+  | FLOAT    {Float (float_of_string $1)}
   | LPAREN expr RPAREN  %prec LPAREN
            { $2 }
+  | expr POW expr    { BinOp (Pow, $1, $3) }
+  | expr MULT expr      { BinOp (Times,  $1, $3) }
+  | MINUS expr         { UnOp (Neg, $2) }
+  | SIN LPAREN expr RPAREN  {UnOp(Sin, $3)}
+  | COS LPAREN expr RPAREN  {UnOp(Cos, $3)}
+  | LOG LPAREN expr RPAREN  {UnOp(Log, $3)}
+  | expr DIV expr      { BinOp (Divide,  $1, $3) }
+  | expr PLUS expr      { BinOp (Plus,   $1, $3) }
+  | expr MINUS expr     { BinOp (Minus,  $1, $3) }
+  | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
+  | VAR    { Var $1 }
+  | PI      { PI }
+  | E      { E }
 ;
 
 

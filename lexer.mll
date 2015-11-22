@@ -22,9 +22,17 @@ rule token = parse
   | "-" { MINUS }
   | "*" { MULT }
   | "^" { POW }
+  | "/" { DIV }
+  | "cos" { COS }
+  | "sin" { SIN }
+  | "log" { LOG }
+  | "derive" { DERIVE }
+  | "pi" { PI }
+  | "with respect to" {DERIV}
+  | "e" { E }
   | '(' | "begin"    { LPAREN }
   | ')' | "end"   { RPAREN }
   | ident as id { VAR id }
-  | integral as i {INT i}
+  | integral as i {FLOAT i}
   | eof { EOF }
 
