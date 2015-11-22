@@ -141,7 +141,14 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 
 and simplify_times_list l = times (STimes l,STimes [])
 
-
+let deriv s1 s2 = 
+ match s1 with
+  | Float -> SFloat 0.
+  | Var -> SFloat 1.
+  | BinOp -> failwith "TODO"
+  | UnOp -> failwith "TODO"
+  | PI -> SFloat 0.
+  | E -> SFloat 0.
 
 
 
@@ -152,7 +159,7 @@ let rec bin_op op s1 s2 =
     | Minus  -> plus (s1, times(s2, SFloat (-1.)))
     | Pow    -> pow (s1, s2)
     | Divide -> times (s1, pow(s2, SFloat (-1.)))
-    | Deriv  -> failwith "TODO"
+    | Deriv  -> deriv (s1, s2) 
 
 and un_op op s =
     match op with
