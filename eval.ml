@@ -57,7 +57,6 @@ let combine (l1: s_expr list) (l2: s_expr list) : s_expr=
     returns Some e representing the combination of e1 and e2 if they do
 *)
 let rec compare (e1: s_expr) (e2: s_expr): s_expr option = 
-    (*Printf.printf "Compare";*)
     match e1, e2 with
     | a, b when a = b -> Some (STimes [SFloat 2.; e1])
     | SFloat a, SFloat b -> Some (SFloat (a+. b))
@@ -84,10 +83,6 @@ let plus = function
 | SPlus l, s          -> SPlus (add l s)
 | s, SPlus l          -> SPlus (add l s)
 | s1, s2              -> match compare s1 s2 with Some e -> e | None -> SPlus [s1;s2]
-
-
-(*let add (a,b) = simple_plus (plus (a,b))*)
-
 
 
 let rec simple_mult = function
