@@ -76,7 +76,7 @@ let rec plus_help l exp =
 (* Returns a fully simplified expression from the added expressions*)
 let plus = function
 | SFloat a, SFloat b  -> SFloat(a+.b)
-| SPlus l1, SPlus l2  -> SPlus (List.fold_left add l2 l1)
+| SPlus l1, SPlus l2  -> SPlus (List.fold_left plus_help l2 l1)
 | SPlus l, s          -> SPlus (plus_help l s)
 | s, SPlus l          -> SPlus (plus_help l s)
 | s1, s2              -> match compare s1 s2 with Some e -> e | None -> SPlus [s1;s2]
