@@ -164,7 +164,7 @@ let rec bin_op op s1 s2 =
     | Minus  -> plus (s1, times(s2, SFloat (-1.)))
     | Pow    -> pow (s1, s2)
     | Divide -> times (s1, pow(s2, SFloat (-1.)))
-    | Deriv  -> deriv (s1, s2) 
+    | Deriv  -> deriv s1 s2
 
 and un_op op s =
     match op with
