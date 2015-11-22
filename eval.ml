@@ -141,14 +141,19 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 
 and simplify_times_list l = times (STimes l,STimes [])
 
-let deriv s1 s2 = 
+let deriv s1 s2 =
  match s1 with
-  | Float -> SFloat 0.
-  | Var -> SFloat 1.
-  | BinOp -> failwith "TODO"
-  | UnOp -> failwith "TODO"
-  | PI -> SFloat 0.
-  | E -> SFloat 0.
+  | SFloat x-> SFloat 0.
+  | SVar x-> SFloat 1.
+  | STimes x -> failwith "TODO"
+  | SPlus  x -> failwith "TODO"
+  | SPow (e1, e2) -> failwith "TODO"
+  | SMatrix x -> failwith "TODO"
+  | SSin x -> failwith "TODO"
+  | SCos x -> failwith "TODO"
+  | SLog x -> failwith "TODO"
+  | SPI -> SFloat 0.
+  | SE -> SFloat 0.
 
 
 
