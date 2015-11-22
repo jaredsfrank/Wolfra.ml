@@ -29,9 +29,6 @@ type s_expr =
 
 let rec subst e = failwith "TODO"
 
-(*let rec simple_plus = function
-| SPlus p -> SPlus (List.filter (fun x -> x <> SFloat 0.) p)
-| s       -> s*)
 
 (*[is_float s] returns true if s is a float*)
 let is_float = function
@@ -50,8 +47,8 @@ let combine (l1: s_expr list) (l2: s_expr list) : s_expr=
     let add_float accum x = (match x with
                            | SFloat f -> accum +. f
                            |  _      -> accum) in
-    let accum1 = List.fold_left add_float 0. l1 in
-    SFloat (List.fold_left add_float accum1 l2)
+    let accum1 = max 1. (List.fold_left add_float 0. l1) in
+    SFloat (max (accum1 +. 1.) (List.fold_left add_float accum1 l2))
 
 (*[compare e1 e2] returns None if e1 and e2 do not combine.
     returns Some e representing the combination of e1 and e2 if they do
