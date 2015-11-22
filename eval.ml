@@ -63,22 +63,22 @@ let rec compare (e1: s_expr) (e2: s_expr): s_expr option =
     | _, _ -> None
 
 
-(*[add l exp] adds exp with l, combining with similar terms if relevant
+(*[plus_help l exp] adds exp with l, combining with similar terms if relevant
   INVARIANT: l is fully simplified
 *)
-let rec add l exp =
+let rec plus_help l exp =
     match l with
     | [] -> [exp]
     | h::t -> (match compare exp h with
                 | Some e -> e::t
-                | None -> h::(add t exp))
+                | None -> h::(plus_help t exp))
 
 (* Returns a fully simplified expression from the added expressions*)
 let plus = function
 | SFloat a, SFloat b  -> SFloat(a+.b)
 | SPlus l1, SPlus l2  -> SPlus (List.fold_left add l2 l1)
-| SPlus l, s          -> SPlus (add l s)
-| s, SPlus l          -> SPlus (add l s)
+| SPlus l, s          -> SPlus (plus_help l s)
+| s, SPlus l          -> SPlus (plus_help l s)
 | s1, s2              -> match compare s1 s2 with Some e -> e | None -> SPlus [s1;s2]
 
 
