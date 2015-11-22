@@ -28,7 +28,6 @@ let parse_error _ =
 %token DERIV
 %token DERIVE
 %token <string> VAR
-%token <string> STRING
 %token <string> FLOAT
 %token LPAREN RPAREN
 %token EOF
