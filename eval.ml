@@ -20,6 +20,7 @@ type s_expr =
     | STimes of s_expr list
     | SPlus of s_expr list
     | SPow of s_expr * s_expr
+    | SMatrix of s_expr list
     | SSin of s_expr
     | SCos of s_expr
     | SLog of s_expr
@@ -170,7 +171,11 @@ and eval = function
     | Var    v            -> SVar v
     | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
     | UnOp   (op, e)      -> un_op op (eval e)
-    | Matrix m            -> failwith "TODO"
+    | Matrix m            -> let rec helper mat =
+                             (match mat with
+                             | [[]] -> [[]]
+                             | h::t -> (List.map eval h)::(helper t)
+                             | []-> []) in SMatrix (helper m)
     | E                   -> SE
     | PI                  -> SPI
 
