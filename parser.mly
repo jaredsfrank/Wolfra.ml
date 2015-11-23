@@ -55,6 +55,7 @@ expr:
   | LPAREN expr RPAREN  %prec LPAREN
            { $2 }
   | expr POW expr    { BinOp (Pow, $1, $3) }
+  | FLOAT expr       {BinOp (Times, Float (float_of_string $1), $2)}
   | expr MULT expr      { BinOp (Times,  $1, $3) }
   | MINUS expr         { UnOp (Neg, $2) }
   | SIN LPAREN expr RPAREN  {UnOp(Sin, $3)}
