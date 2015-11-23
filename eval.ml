@@ -108,16 +108,16 @@ and pow = function
 
 
 and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
-    let distr s l = List.map (fun x -> times(x,s)) l in
+    let distr s l = List.fold_left (fun accum x -> plus(times(x,s), accum)) (SPlus []) l in
     match e1, e2 with
     | SFloat a, SFloat b ->  Some (SFloat (a *. b))
     | x, SPow(s, y) when x = s    -> Some (pow (s, unbox (plus (y, SFloat 1.))))
     | SPow(s, y), x when x = s    -> Some (pow (s, unbox (plus (y, SFloat 1.))))
     | SPow (s1, x), SPow (s2, y) when s1 = s2 -> Some (pow (s1, unbox (plus (x,y))))
-    | SPlus l1, SPlus l2 -> Some (simplify_plus_list (List.fold_left (fun accum x -> accum @ (distr x l2)) [] l1))
+    | SPlus l1, SPlus l2 -> Some ( (List.fold_left (fun accum x -> plus(accum, (distr x l2))) (SPlus []) l1))
     | a, b when a = b -> Some (pow (e1, SFloat 2.))
-    | s, SPlus l -> Some( simplify_plus_list (distr s l ))
-    | SPlus l, s -> Some( simplify_plus_list (distr s l ))
+    | s, SPlus l -> Some(  (distr s l ))
+    | SPlus l, s -> Some(  (distr s l ))
     | _, _ -> None
 
 and times_help l exp =
@@ -141,9 +141,6 @@ and times = function
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]
 
-and simplify_plus_list l = plus (SPlus l,SPlus [])
-
-and simplify_times_list l = times (STimes l,STimes [])
 
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
