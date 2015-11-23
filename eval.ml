@@ -141,32 +141,32 @@ and times = function
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]
 
-let s_times l = List.fold_left (fun a b -> times (a,b)) (STimes []) l
+let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes []) l)
+let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
-(*NOTE: For future, use the functions times, plus, and pow instead of STime, SPlus, and SPow when constructing new
-lists of expressions. SPow can literally replace pow. times and plus can only take in two expressions at a time (maybe ill fix this)
-So for now, where you would put STimes [e1;e2;e3], put times (e1, times(e2,e3))
+(*NOTE: For future, use the functions s_times, s_plus, and pow instead of STimes, SPlus, and SPow when constructing new
+lists of expressions. pow can directly replace SPow. s_times can directly replace STimes, and s_plus can directly replace SPlus
 *)
 let rec deriv s1 s2 =
   match s1, s2 with
   | SFloat x, _ -> SFloat 0.
   | SVar x, SVar x' -> if (x=x') then (SFloat 1.) else SFloat 0.
   | STimes [h], SVar x' -> deriv h s2
-  | STimes (h::t), SVar x' -> let l1 = times ((deriv h s2),STimes t) in
-                              let l2 = times (h,deriv (STimes t) s2) in
-                              plus (l1,l2)
+  | STimes (h::t), SVar x' -> let l1 = s_times [(deriv h s2);STimes t] in
+                              let l2 = s_times [h;deriv (STimes t) s2] in
+                              s_plus [l1; l2]
   | SPlus [h], SVar x' -> deriv h s2
   | SPlus (h::t), SVar x'  -> let l1 = deriv h s2 in
                               let l2 = deriv (SPlus t) s2 in
-                              plus (l1,l2)
+                              s_plus [l1; l2]
   | SPow (e1, e2), SVar x' -> (match e1 with            (*Note: There are a number of cases I'm not sure about here*)
-                              | SE -> times (pow(e1, e2), deriv e2 s2)
-                              | SPI -> times (pow (e1, e2), times (SLog e1, deriv e2 s2))
-                              | SFloat a -> times ( pow (e1, e2), times( SLog (SFloat a), deriv e2 s2))
+                              | SE -> s_times [pow(e1, e2); deriv e2 s2]
+                              | SPI -> s_times [pow (e1, e2); SLog e1; deriv e2 s2]
+                              | SFloat a -> s_times  [pow (e1, e2); SLog (SFloat a); deriv e2 s2]
                               | SVar x-> if (x = x') then
-                                times (e2, times (pow(e1, plus (e2, SFloat (-1.))), deriv e1 s2))
-                                else times (pow (e1, e2), times(SLog e1, deriv e2 s2)) 
+                                s_times [e2; pow(e1, s_plus [e2; SFloat (-1.)]); deriv e1 s2]
+                                else s_times [pow (e1, e2); SLog e1; deriv e2 s2] 
                               | SPlus x -> failwith "TODO"
                               | STimes x -> failwith "TODO"
                               | _ -> failwith "TODO")
@@ -174,15 +174,15 @@ let rec deriv s1 s2 =
   | SSin x, SVar x' -> (match x with
               | SFloat v -> SFloat 0.
               | SVar v -> if (v = x') then (SCos x) else (SFloat 0.)
-              | _ -> (times ((SCos x),(deriv x s2)) ))
+              | _ -> s_times [SCos x; deriv x s2] )
   | SCos x, SVar x' -> (match x with
               | SFloat x -> SFloat 0.
               | SVar v -> if (v = x') then times ((SFloat (-1.)),(SSin x)) else SFloat 0.
-              | _ -> times ((SFloat (-1.)), times ((SSin x),(deriv x s2))))
+              | _ -> s_times [SFloat (-1.); SSin x; deriv x s2] )
   | SLog x, SVar x' -> (match x with
                    | SFloat v -> SFloat 0.
                    | SVar v -> if (v=x') then (pow (x, SFloat (-1.))) else SFloat 0.
-                   | _ -> times ((pow (x, SFloat (-1.))), deriv x s2))
+                   | _ -> s_times [pow (x, SFloat (-1.)); deriv x s2])
 
   | SPI, SVar x' -> SFloat 0.
   | SE, SVar x' -> SFloat 0.
