@@ -27,8 +27,10 @@ rule token = parse
   | "sin" { SIN }
   | "log" { LOG }
   | "derive" { DERIVE }
+  | "d(" { DERIVE2 }
   | "pi" { PI }
   | "with respect to" {DERIV}
+  | ")/d"  { DERIV2 }
   | "e" { E }
   | '(' | "begin"    { LPAREN }
   | ')' | "end"   { RPAREN }

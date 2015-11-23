@@ -27,6 +27,8 @@ let parse_error _ =
 %token MINUS
 %token DERIV
 %token DERIVE
+%token DERIV2
+%token DERIVE2
 %token <string> VAR
 %token <string> FLOAT
 %token LPAREN RPAREN
@@ -35,7 +37,7 @@ let parse_error _ =
 
 %nonassoc VAR LBRACE FLOAT LPAREN PI E
 %right POW
-%left MULT DIV COS SIN LOG DERIV DERIVE
+%left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
 %left PLUS MINUS
 
 
@@ -61,6 +63,7 @@ expr:
   | expr PLUS expr      { BinOp (Plus,   $1, $3) }
   | expr MINUS expr     { BinOp (Minus,  $1, $3) }
   | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
+  | DERIVE2 expr DERIV2 expr     { BinOp  (Deriv, $2, $4) }
   | VAR    { Var $1 }
   | PI      { PI }
   | E      { E }
