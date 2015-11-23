@@ -170,15 +170,15 @@ let rec deriv s1 s2 =
   | SSin x, SVar x' -> (match x with
               | SFloat v -> SFloat 0.
               | SVar v -> if (v = x') then (SCos x) else (SFloat 0.)
-              | _ -> (STimes [(SCos x);(deriv x s2)]) )
+              | _ -> (times ((SCos x),(deriv x s2)) )
   | SCos x, SVar x' -> (match x with
               | SFloat x -> SFloat 0.
-              | SVar v -> if (v = x') then STimes [(SFloat (-1.));(SSin x)] else SFloat 0.
-              | _ -> STimes [(SFloat (-1.));(SSin x);(deriv x s2)])
+              | SVar v -> if (v = x') then times ((SFloat (-1.)),(SSin x)) else SFloat 0.
+              | _ -> times ((SFloat (-1.)), times ((SSin x);(deriv x s2)))
   | SLog x, SVar x' -> (match x with
                    | SFloat v -> SFloat 0.
-                   | SVar v -> if (v=x') then (SPow (x, SFloat (-1.))) else SFloat 0.
-                   | _ -> STimes [(SPow (x, SFloat (-1.))); deriv x s2])
+                   | SVar v -> if (v=x') then (pow (x, SFloat (-1.))) else SFloat 0.
+                   | _ -> times ((pow (x, SFloat (-1.))), deriv x s2)
 
   | SPI, SVar x' -> SFloat 0.
   | SE, SVar x' -> SFloat 0.
