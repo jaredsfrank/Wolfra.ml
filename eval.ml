@@ -103,7 +103,7 @@ and pow = function
 | s, SFloat 1.                    -> s
 | s, SFloat 0.                    -> SFloat 1.
 | SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
-| SPlus l, SFloat f when mod_float f 1. = 0. -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
+| SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
 | s1, s2   -> SPow (s1, s2)
 
 
@@ -145,10 +145,11 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 
 and simplify_times_list l = times (STimes l,STimes [])
 
+(*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 let deriv s1 s2 =
  match s1 with
   | SFloat x-> SFloat 0.
-  | SVar x-> SFloat 1.
+  | SVar x-> SFloat 1. (*NOTE: This is only true if s2 = s1. Otherwise its 0*)
   | STimes x -> failwith "TODO"
   | SPlus  x -> failwith "TODO"
   | SPow (e1, e2) -> failwith "TODO"
