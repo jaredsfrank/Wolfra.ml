@@ -165,11 +165,11 @@ let rec deriv s1 s2 =
               | SFloat x -> SFloat 0.
               | SVar v -> if (v = x') then STimes [(SFloat (-1.));(SSin x)] else SFloat 0.
               | _ -> STimes [(SFloat (-1.));(SSin x);(deriv x s2)])
-  | SLog x, SVar x' -> (match x with 
+  | SLog x, SVar x' -> (match x with
                    | SFloat v -> SFloat 0.
                    | SVar v -> if (v=x') then (SPow (x, SFloat (-1.))) else SFloat 0.
                    | _ -> STimes [(SPow (x, SFloat (-1.))); deriv x s2])
-   
+
   | SPI, SVar x' -> SFloat 0.
   | SE, SVar x' -> SFloat 0.
   | _, _ -> failwith "This shouldn't happen"
