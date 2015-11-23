@@ -21,6 +21,7 @@ let parse_error _ =
 %token COS
 %token PI
 %token E
+%token DECIMAL
 %token SIN
 %token LOG
 %token DIV
@@ -38,7 +39,7 @@ let parse_error _ =
 
 %left PLUS MINUS
 %left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
-%right POW
+%right POW DECIMAL
 %nonassoc VAR LBRACE FLOAT LPAREN PI E
 
 
@@ -51,6 +52,7 @@ let parse_error _ =
 %%
 
 expr:
+  | FLOAT DECIMAL FLOAT {Float (float_of_string ($1^"."^$3))}
   | FLOAT    {Float (float_of_string $1)}
   | LPAREN expr RPAREN  %prec LPAREN
            { $2 }

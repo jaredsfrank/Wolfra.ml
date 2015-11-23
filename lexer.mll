@@ -24,6 +24,7 @@ rule token = parse
   | "+" { PLUS }
   | "-" { MINUS }
   | "*" { MULT }
+  | "." { DECIMAL }
   | "^" { POW }
   | "/" { DIV }
   | "cos" { COS }
