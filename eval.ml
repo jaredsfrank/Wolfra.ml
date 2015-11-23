@@ -141,7 +141,7 @@ and times = function
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]
 
-
+let s_times l = List.fold_left (fun a b -> times (a,b)) (STimes []) l
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
 (*NOTE: For future, use the functions times, plus, and pow instead of STime, SPlus, and SPow when constructing new

@@ -1,5 +1,6 @@
 %{
 (* This parser is implemented with ocamlyacc, not menhir. *)
+(* This code is heavily inspired by the parser for OCalf, A4*)
 
 open Ast
 open Lexing
@@ -35,10 +36,10 @@ let parse_error _ =
 %token EOF
 
 
-%nonassoc VAR LBRACE FLOAT LPAREN PI E
-%right POW
-%left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
 %left PLUS MINUS
+%left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
+%right POW
+%nonassoc VAR LBRACE FLOAT LPAREN PI E
 
 
 /* entry point */
@@ -60,7 +61,7 @@ expr:
   | COS LPAREN expr RPAREN  {UnOp(Cos, $3)}
   | LOG LPAREN expr RPAREN  {UnOp(Log, $3)}
   | expr DIV expr      { BinOp (Divide,  $1, $3) }
-  | expr PLUS expr      { BinOp (Plus,   $1, $3) }
+  | expr PLUS expr   { BinOp (Plus,   $1, $3) }
   | expr MINUS expr     { BinOp (Minus,  $1, $3) }
   | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
   | DERIVE2 expr DERIV2 expr     { BinOp  (Deriv, $2, $4) }

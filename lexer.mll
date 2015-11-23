@@ -2,6 +2,9 @@
 open Parser
 exception Eof
 
+
+(* This code is heavily inspired by the Lexer for OCalf, A4*)
+
 let incr_linenum lexbuf =
   let pos = lexbuf.Lexing.lex_curr_p in
     lexbuf.Lexing.lex_curr_p <- { pos with
@@ -32,8 +35,8 @@ rule token = parse
   | "with respect to" {DERIV}
   | ")/d"  { DERIV2 }
   | "e" { E }
-  | '(' | "begin"    { LPAREN }
-  | ')' | "end"   { RPAREN }
+  | '('     { LPAREN }
+  | ')'     { RPAREN }
   | ident as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }
