@@ -8,13 +8,13 @@ end
 
 module A_Expr = struct
     type 'a t = 'a * string
-    let bind (x,s1) f = 
+    let bind (x,s1) f =
         let (y,s2) = f x in
         (y,s1^s2)
     let return x = (x, "")
 end
 
-type s_expr = 
+type s_expr =
     | SFloat of float
     | SVar of var
     | STimes of s_expr list
@@ -46,12 +46,12 @@ let unbox = function
 
 
 (*Determines if two lists of multiplied terms can be simplified with a new constant coefficient*)
-let combinable l1 l2 = 
+let combinable l1 l2 =
     (List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l1))) true l2)
     &&(List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l2))) true l1)
 
 (*[combine l1 l2] returns a float with constants from both lists added together*)
-let combine (l1: s_expr list) (l2: s_expr list) : s_expr= 
+let combine (l1: s_expr list) (l2: s_expr list) : s_expr=
     let add_float accum x = (match x with
                            | SFloat f -> accum +. f
                            |  _      -> accum) in
@@ -63,7 +63,7 @@ let combine (l1: s_expr list) (l2: s_expr list) : s_expr=
 (*[compare e1 e2] returns None if e1 and e2 do not combine.
     returns Some e representing the combination of e1 and e2 if they do
 *)
-let rec compare (e1: s_expr) (e2: s_expr): s_expr option = 
+let rec compare (e1: s_expr) (e2: s_expr): s_expr option =
     match e1, e2 with
     | a, b when a = b -> Some (times (SFloat 2., e1))
     | SFloat a, SFloat b -> Some (SFloat (a+. b))
@@ -146,24 +146,26 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 and simplify_times_list l = times (STimes l,STimes [])
 
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
-let rec deriv s1 s2 = function
+let rec deriv s1 s2 =
+  match s1, s2 with
   | SFloat x, _ -> SFloat 0.
-  | SVar x, SVar x -> SFloat 1.
-  | Svar x, SVar y -> SFloat 0.
+  | SVar x, SVar x' -> if (x=x') then (SFloat 1.) else SFloat 0.
   | STimes x, SVar x' -> failwith "TODO"
   | SPlus x, SVar x'  -> failwith "TODO"
   | SPow (e1, e2), SVar x' -> failwith "TODO"
   | SMatrix x, SVar x' -> failwith "TODO"
   | SSin x, SVar x' -> (match x with
               | SFloat v -> SFloat 0.
-              | SVar v -> if (v = x') then (SCos x) else SFloat 0.
-              | _ -> STimes [(SCos x);(deriv x s2)])
-  | SCos x -> (match x with
+              | SVar v -> if (v = x') then (SCos x) else (SFloat 0.)
+              | _ -> (STimes [(SCos x);(deriv x s2)]) )
+  | SCos x, SVar x' -> (match x with
               | SFloat x -> SFloat 0.
+              | SVar v -> if (v = x') then STimes [(SFloat (-1.));(SSin x)] else SFloat 0.
               | _ -> STimes [(SFloat (-1.));(SSin x);(deriv x s2)])
-  | SLog x -> failwith "TODO"
-  | SPI -> SFloat 0.
-  | SE -> SFloat 0.
+  | SLog x, SVar x' -> failwith "TODO"
+  | SPI, SVar x' -> SFloat 0.
+  | SE, SVar x' -> SFloat 0.
+  | _, _ -> failwith "This shouldn't happen"
 
 
 
@@ -188,7 +190,7 @@ and un_op op s =
     | EigValue  -> failwith "TODO"
     | RRef      -> failwith "TODO"
 
-and eval = function                   
+and eval = function
     | Float  f            -> SFloat f
     | Var    v            -> SVar v
     | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
