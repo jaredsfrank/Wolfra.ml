@@ -146,6 +146,11 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 and simplify_times_list l = times (STimes l,STimes [])
 
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
+
+(*NOTE: For future, use the functions times, plus, and pow instead of STime, SPlus, and SPow when constructing new
+lists of expressions. SPow can literally replace pow. times and plus can only take in two expressions at a time (maybe ill fix this)
+So for now, where you would put STimes [e1;e2;e3], put times (e1, times(e2,e3))
+*)
 let rec deriv s1 s2 =
   match s1, s2 with
   | SFloat x, _ -> SFloat 0.
