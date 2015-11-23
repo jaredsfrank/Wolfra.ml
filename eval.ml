@@ -169,7 +169,9 @@ let rec deriv s1 s2 =
                               | SFloat a -> times ( pow (e1, e2), times( SLog (SFloat a), deriv e2 s2))
                               | SVar x-> if (x = x') then
                                 times (e2, times (pow(e1, plus (e2, SFloat (-1.))), deriv e1 s2))
-                                else times (pow (e1, e2), times(SLog e1, deriv e2 s2))    
+                                else times (pow (e1, e2), times(SLog e1, deriv e2 s2)) 
+                              | SPlus x -> failwith "TODO"
+                              | STimes x -> failwith "TODO"
                               | _ -> failwith "TODO")
   | SMatrix x, SVar x' -> failwith "TODO"
   | SSin x, SVar x' -> (match x with
