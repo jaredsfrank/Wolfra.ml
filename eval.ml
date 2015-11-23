@@ -158,7 +158,10 @@ let rec deriv s1 s2 =
   | SPlus (h::t), SVar x'  -> let l1 = deriv h s2 in
                               let l2 = deriv (SPlus t) s2 in
                               SPlus [l1;l2]
-  | SPow (e1, e2), SVar x' -> failwith "TODO"
+  | SPow (e1, e2), SVar x' -> (match e1 with
+                              | SE -> STimes [SPow(e1, e2); deriv e2 s2]
+                              | SFloat a -> STimes [ SPow (e1, e2); SLog a; deriv e2 s2]
+                              | _ -> STimes [e2; SPow(e1, SPlus [e2; SFloat (-1.)]); deriv e1 s2]
   | SMatrix x, SVar x' -> failwith "TODO"
   | SSin x, SVar x' -> (match x with
               | SFloat v -> SFloat 0.
