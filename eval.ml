@@ -79,7 +79,7 @@ let rec compare (e1: s_expr) (e2: s_expr): s_expr option =
 and plus_help l exp =
     match l with
     | [] -> [exp]
-    | (SPlus l)::t -> Printf.printf "here!!";plus_help(l@t) exp
+    | (SPlus l)::t -> plus_help(l@t) exp
     | h::t -> (match compare exp h with
                 | Some (SFloat 0.) -> t
                 | Some e -> e::t
