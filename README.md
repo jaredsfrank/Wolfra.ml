@@ -14,7 +14,7 @@ https://docs.google.com/document/d/1N5xu8jJgQSQMoiRbt0gWIrhO6v6sy7TYFekzRvxS3mY/
 <h3> To Test in UTOP </h3>
 <code>#use "eval.ml;;"</code></br>
 <code>#use "parse.ml;;"</code></br>
-<code>eval (parse_expr "(x^2) + (5*(x^2));;")</code>
+<code>eval (parse_expr "x^2 + 5*x^2;;")</code>
 
 <h3> To Run </h3>
 <code>cs3110 compile main.ml</code> </br>
