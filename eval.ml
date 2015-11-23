@@ -151,20 +151,20 @@ let rec deriv s1 s2 =
   | SFloat x, _ -> SFloat 0.
   | SVar x, SVar x' -> if (x=x') then (SFloat 1.) else SFloat 0.
   | STimes [h], SVar x' -> deriv h s2
-  | STimes (h::t), SVar x' -> let l1 = STimes ((deriv h s2)::t) in
-                              let l2 = STimes [h;deriv (STimes t) s2] in
-                              SPlus [l1;l2]
+  | STimes (h::t), SVar x' -> let l1 = times ((deriv h s2),STimes t) in
+                              let l2 = times (h,deriv (STimes t) s2) in
+                              plus (l1,l2)
   | SPlus [h], SVar x' -> deriv h s2
   | SPlus (h::t), SVar x'  -> let l1 = deriv h s2 in
                               let l2 = deriv (SPlus t) s2 in
-                              SPlus [l1;l2]
+                              plus (l1,l2)
   | SPow (e1, e2), SVar x' -> (match e1 with            (*Note: There are a number of cases I'm not sure about here*)
-                              | SE -> STimes [SPow(e1, e2); deriv e2 s2]
-                              | SPI -> STimes [SPow (e1, e2); SLog e1; deriv e2 s2]
-                              | SFloat a -> STimes [ SPow (e1, e2); SLog (SFloat a); deriv e2 s2]
+                              | SE -> times (pow(e1, e2), deriv e2 s2)
+                              | SPI -> times (pow (e1, e2), times (SLog e1, deriv e2 s2))
+                              | SFloat a -> times ( pow (e1, e2), times( SLog (SFloat a), deriv e2 s2))
                               | SVar x-> if (x = x') then
-                                STimes [e2; SPow(e1, SPlus [e2; SFloat (-1.)]); deriv e1 s2]
-                                else STimes [SPow (e1, e2); SLog e1; deriv e2 s2]    
+                                times (e2, times (pow(e1, plus (e2, SFloat (-1.))), deriv e1 s2))
+                                else times (pow (e1, e2), times(SLog e1, deriv e2 s2))    
                               | _ -> failwith "TODO")
   | SMatrix x, SVar x' -> failwith "TODO"
   | SSin x, SVar x' -> (match x with
