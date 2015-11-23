@@ -147,7 +147,7 @@ and simplify_times_list l = times (STimes l,STimes [])
 
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 let rec deriv s1 s2 = function
-  | SFloat x, SVar x-> SFloat 0.
+  | SFloat x, _ -> SFloat 0.
   | SVar x, SVar x -> SFloat 1.
   | Svar x, SVar y -> SFloat 0.
   | STimes x, SVar x' -> failwith "TODO"
