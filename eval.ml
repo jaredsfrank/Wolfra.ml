@@ -146,16 +146,21 @@ and simplify_plus_list l = plus (SPlus l,SPlus [])
 and simplify_times_list l = times (STimes l,STimes [])
 
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
-let deriv s1 s2 =
- match s1 with
-  | SFloat x-> SFloat 0.
-  | SVar x-> SFloat 1. (*NOTE: This is only true if s2 = s1. Otherwise its 0*)
-  | STimes x -> failwith "TODO"
-  | SPlus  x -> failwith "TODO"
-  | SPow (e1, e2) -> failwith "TODO"
-  | SMatrix x -> failwith "TODO"
-  | SSin x -> failwith "TODO"
-  | SCos x -> failwith "TODO"
+let rec deriv s1 s2 = function
+  | SFloat x, SVar x-> SFloat 0.
+  | SVar x, SVar x -> SFloat 1.
+  | Svar x, SVar y -> SFloat 0.
+  | STimes x, SVar x' -> failwith "TODO"
+  | SPlus x, SVar x'  -> failwith "TODO"
+  | SPow (e1, e2), SVar x' -> failwith "TODO"
+  | SMatrix x, SVar x' -> failwith "TODO"
+  | SSin x, SVar x' -> (match x with
+              | SFloat v -> SFloat 0.
+              | SVar v -> if (v = x') then (SCos x) else SFloat 0.
+              | _ -> STimes [(SCos x);(deriv x s2)])
+  | SCos x -> (match x with
+              | SFloat x -> SFloat 0.
+              | _ -> STimes [(SFloat (-1.));(SSin x);(deriv x s2)])
   | SLog x -> failwith "TODO"
   | SPI -> SFloat 0.
   | SE -> SFloat 0.
