@@ -150,7 +150,10 @@ let rec deriv s1 s2 =
   match s1, s2 with
   | SFloat x, _ -> SFloat 0.
   | SVar x, SVar x' -> if (x=x') then (SFloat 1.) else SFloat 0.
-  | STimes x, SVar x' -> failwith "TODO"
+  | STimes [h], SVar x' -> deriv h s2
+  | STimes (h::t), SVar x' -> let l1 = STimes ((deriv h s2)::t) in
+                              let l2 = STimes [h;deriv (STimes t) s2] in
+                              SPlus [l1;l2]
   | SPlus x, SVar x'  -> failwith "TODO"
   | SPow (e1, e2), SVar x' -> failwith "TODO"
   | SMatrix x, SVar x' -> failwith "TODO"
