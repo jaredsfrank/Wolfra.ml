@@ -12,5 +12,7 @@ let rec main () =
         | s -> Printf.printf "Result: %s\n\n" (string_of_expr (eval (parse_expr s))); main()
     with
     | Failure "TODO" -> Printf.printf "That feature is not yet implemented\n\n"; main()
+    | Failure "Division by 0" -> Printf.printf "Uh oh...Division by 0\n\n"; main()
+    | Failure "This shouldn't happen" -> Printf.printf "Please derive with respect to a variable\n\n"; main()
 
 let () = main ()
