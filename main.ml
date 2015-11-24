@@ -5,7 +5,7 @@ open Parse
 
 let rec main () = 
     Printf.printf "Write an expression: \n";
-    let result = String.lowercase(read_line ()) in
+    let result = read_line () in
     try
         match result with
         | "quit" -> Printf.printf "done"; ()

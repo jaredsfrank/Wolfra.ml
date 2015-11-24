@@ -76,14 +76,14 @@ let rec compare (e1: s_expr) (e2: s_expr): s_expr option =
 (*[plus_help l exp] adds exp with l, combining with similar terms if relevant
   INVARIANT: l is fully simplified
 *)
-and plus_help l exp =
+and plus_help l s =
     match l with
-    | [] -> [exp]
-    | (SPlus l)::t -> plus_help(l@t) exp
-    | h::t -> (match compare exp h with
+    | [] -> [s]
+    | (SPlus l)::t -> plus_help(l@t) s
+    | h::t -> (match compare s h with
                 | Some (SFloat 0.) -> t
                 | Some e -> e::t
-                | None -> h::(plus_help t exp))
+                | None -> h::(plus_help t s))
 
 (* Returns a fully simplified expression from the added expressions*)
 and plus = function
@@ -105,6 +105,7 @@ and pow = function
 | SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
 | SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
 | s1, s2   -> SPow (s1, s2)
+
 
 
 and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
@@ -136,7 +137,7 @@ and times = function
 | _,  SFloat 0.         -> SFloat 0.
 | SFloat 1., s          -> s
 | s, SFloat 1.          -> s
-| STimes l1, STimes l2  -> STimes (List.fold_left times_help [] (l2@l1))
+| STimes l1, STimes l2  -> STimes (List.fold_left times_help l2 l1)
 | STimes l, s           -> STimes (times_help l s)
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]

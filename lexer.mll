@@ -13,8 +13,7 @@ let incr_linenum lexbuf =
     }
 }
 
-let ident      = (['a'-'z'] | '_') (['a'-'z'] | ['A'-'Z'] | ['0'-'9'] | '_' | '\'')*
-let constr     = ['A'-'Z'] (['a'-'z'] | ['A'-'Z'] | ['0'-'9'] | '_' | '\'')*
+let letters     = (['a'-'z'] | ['A'-'Z'])*
 let integral   = ['0'-'9']+
 let whitespace = [' ' '\t']
 
@@ -33,12 +32,12 @@ rule token = parse
   | "derive" { DERIVE }
   | "d(" { DERIVE2 }
   | "pi" { PI }
-  | "with respect to" {DERIV}
+  | "wrt" {DERIV}
   | ")/d"  { DERIV2 }
   | "e" { E }
   | '('     { LPAREN }
   | ')'     { RPAREN }
-  | ident as id { VAR id }
+  | letters as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }
 

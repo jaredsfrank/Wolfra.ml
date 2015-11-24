@@ -1,5 +1,7 @@
 open Eval
 let rec step_string _ = failwith "TODO"
+(*This code is inspired by the printer from A4 OCalf*)
+
 
 let rec format_expr f e = 
     let bracket parent f e =
@@ -13,7 +15,9 @@ let rec format_expr f e =
     | STimes (h::t) -> Format.fprintf f "@[%a*%a@]" (bracket e) h (bracket e) (STimes t)
     | SPlus [] -> Format.fprintf f "@[@]"
     | SPlus [h] -> Format.fprintf f "@[%a@]" (bracket e) h
-    | SPlus (h::t) -> Format.fprintf f "@[%a+%a@]" (bracket e) h (bracket e) (SPlus t)
+    | SPlus (h1::h2::t) -> (match h2 with 
+                              | SFloat x when x<0. -> Format.fprintf f "@[%a-%a@]" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
+                              | _ -> Format.fprintf f "@[%a+%a@]" (bracket e) h1 (bracket e) (SPlus t))
     | SPow (s1,s2) -> Format.fprintf f "@[(%a)^(%a)@]" (bracket e) s1 (bracket e) s2
     | SMatrix x ->  failwith "TODO"
     | SSin s ->  Format.fprintf f "@[sin(%a)@]" (bracket e) s
