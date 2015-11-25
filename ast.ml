@@ -3,7 +3,7 @@ type constant = string
 
 
 type binop = 
-    | Plus | Times | Minus | Divide | Pow | Deriv
+    | Plus | Times | Minus | Divide | Pow | Deriv 
 
 
 type unop = 
@@ -17,6 +17,7 @@ type expr =
   | BinOp    of binop * expr * expr
   | UnOp     of unop * expr
   | Matrix   of expr list list
+  | Subst    of expr * expr * expr
   | PI
   | E
 

@@ -37,6 +37,9 @@ rule token = parse
   | "e" { E }
   | '('     { LPAREN }
   | ')'     { RPAREN }
+  | "sub" {SUBST}
+  | "for"      {FOR}
+  | "in"       {IN}
   | letters as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }

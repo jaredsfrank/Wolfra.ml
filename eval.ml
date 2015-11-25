@@ -28,7 +28,7 @@ type s_expr =
     | SPI
 
 
-let rec subst e = failwith "TODO"
+
 
 
 (*[is_float s] returns true if s is a float*)
@@ -263,7 +263,22 @@ let rec deriv s1 s2 =
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"
 
-
+let rec subst ((k,v): string * float ) e =
+  match e with
+  | SFloat f ->  e
+  | SVar x' when x' = k -> SFloat v
+  | SVar x -> e
+  | STimes (c, []) -> SFloat c
+  | STimes (c, h::t) -> times(subst (k,v) h, subst (k,v) (STimes(c,t)))
+  | SPlus [] -> SFloat 0.
+  | SPlus (h::t) -> plus(subst (k,v) h, subst (k,v) (SPlus t))
+  | SPow (e1,e2) -> pow (subst (k,v) e1, subst  (k,v) e2)
+  | SMatrix _ -> failwith "TODO"
+  | SSin x -> SSin (subst (k,v) x)
+  | SCos x -> SCos (subst (k,v) x)
+  | SLog x -> SLog (subst (k,v) x)
+  | SE -> SE
+  | SPI -> SPI
 
 let bin_op op s1 s2 =
     match op with
@@ -296,7 +311,9 @@ let rec eval = function
     | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
     | UnOp   (op, e)      -> un_op op (eval e)
     | Matrix m            -> failwith "TODO"
+    | Subst  (Float f,Var v,e)      -> subst (v,f) (eval e)
+    | Subst (Var v, Float f, e)     -> subst (v,f) (eval e)
+    | Subst (_)           -> failwith "Cannot substitute that"
     | E                   -> SE
     | PI                  -> SPI
 
-let rec simplify e = failwith "TODO"

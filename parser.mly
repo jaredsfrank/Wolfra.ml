@@ -23,6 +23,9 @@ let parse_error _ =
 %token E
 %token DECIMAL
 %token SIN
+%token SUBST
+%token FOR
+%token IN
 %token LOG
 %token DIV
 %token PLUS
@@ -40,7 +43,7 @@ let parse_error _ =
 %left PLUS MINUS
 %left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
 %right POW DECIMAL
-%nonassoc VAR LBRACE FLOAT LPAREN PI E
+%nonassoc VAR LBRACE FLOAT LPAREN PI E SUBST FOR IN
 
 
 /* entry point */
@@ -61,6 +64,7 @@ expr:
   | expr MULT expr      { BinOp (Times,  $1, $3) }
   | MINUS expr         { UnOp (Neg, $2) }
   | SIN LPAREN expr RPAREN  {UnOp(Sin, $3)}
+  | SUBST expr FOR expr IN expr {Subst ($2, $4, $6)}
   | COS LPAREN expr RPAREN  {UnOp(Cos, $3)}
   | LOG LPAREN expr RPAREN  {UnOp(Log, $3)}
   | expr DIV expr      { BinOp (Divide,  $1, $3) }
