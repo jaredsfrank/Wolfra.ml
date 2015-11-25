@@ -130,6 +130,12 @@ and plus = function
                              SMatrix(add_matrices m fmatrix))
                          else failwith "Not correct dimensions"
 | SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
+| SMatrix m, SMatrix n ->
+                  if (check_dimension m n)&&
+                     (check_dim m (List.length (List.hd m)))&&
+                     (check_dim n (List.length (List.hd n))) then
+                     SMatrix(add_matrices m n)
+                  else failwith "Not correct dimensions"
 | SFloat 0., s        -> s
 | s, SFloat 0.        -> s
 | SPlus l1, SPlus l2  -> SPlus (List.fold_left plus_help l2 l1)
