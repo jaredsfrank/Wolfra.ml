@@ -210,7 +210,47 @@ and times = function
 let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes []) l)
 let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
+let rec remove_at n = function
+  | [] -> []
+  | h::t -> if n = 0 then t else h::remove_at (n-1) t
 
+(* Removes the ith column and the first row in a matrix (for determinants)*)
+let remove m i =
+    let newm = List.tl m in
+    List.map (remove_at i) newm
+
+let prep_det m =
+  match m with
+  | [] -> []
+  | h::t -> let rec helper i n =
+            (match n with
+            | [] -> []
+            | s::e -> if i = 1 then times(s,SFloat(-1.))::helper (i-1) e
+              else s::helper (i+1) e) in
+              (helper 0 h)::t
+
+(* Returns the determinant of a matrix*)
+let determinant m =
+  let row = List.length m in
+  let _ = for i = 0 to (row-1) do
+            if (List.length (List.nth m i)) <> row
+              then failwith "Matrix not square"
+            else ()
+          done in
+  let rec helper hm =
+    let acc = ref [] in
+    (match hm with
+    | [] -> SFloat 1.
+    | h::t -> if List.length h = 2 then
+                plus (times(List.hd h, List.nth (List.hd t) 1),times(times(List.hd (List.hd t), List.hd(List.tl h)),SFloat(-1.)))
+              else
+                let newh = List.hd (prep_det hm) in
+                let () = (for i = 0 to (List.length newh) - 1 do
+                  acc := times((List.nth newh i),helper (remove hm i))::!acc
+                done) in List.fold_left (fun accum x -> plus(accum,x)) (SFloat 0.) !acc
+                  )
+    in helper m
+    
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
 (*NOTE: For future, use the functions s_times, s_plus, and pow instead of STimes, SPlus, and SPow when constructing new
