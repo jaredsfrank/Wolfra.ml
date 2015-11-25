@@ -45,6 +45,37 @@ let unbox = function
 | s -> s
 
 
+(* Checks a matrix's lists to make sure each row has the same number of columns*)
+let rec check_dim m f =
+    match m with
+    | [] -> true
+    | h::t -> if List.length h = f then check_dim t f
+              else false
+
+(* Checks two matrices' lists to make sure their dimensions are the same*)
+let rec check_dimension m n =
+    match m, n with
+    | [], [] -> true
+    | h1::t1, h2::t2 -> if List.length h1 = List.length h2 then check_dimension t1 t2
+                        else false
+    | [], _ -> false
+    | _, [] -> false
+
+(*Creates the s_expr list list of dimensions row col with expression f in every position*)
+let create_matrix row col f =
+    let rec make_rows c acc = if c = 0 then acc else make_rows (c-1) (f::acc) in
+    let rows = make_rows col [] in
+    let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
+    combine_rows row []
+
+(* Returns the transpose of a matrix*)
+let rec trans_matrix = function
+  | [] -> []
+  | []::t -> trans_matrix t
+  | (h::t1)::t2 -> (h::(List.map List.hd t2))::trans_matrix (t1::(List.map List.tl t2))
+  
+
+
 (*Determines if two lists of multiplied terms can be simplified with a new constant coefficient*)
 let combinable l1 l2 =
       let same l1' l2' = List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l1'))) true l2' in
@@ -86,37 +117,13 @@ and plus_help l s =
                 | Some e -> e::t
                 | None -> h::(plus_help t s))
                 
-(* Checks a matrix's lists to make sure each row has the same number of columns*)
-let rec check_dim m f =
-    match m with
-    | [] -> true
-    | h::t -> if List.length h = f then check_dim t f
-              else false
 
-(* Checks two matrices' lists to make sure their dimensions are the same*)
-let rec check_dimension m n =
-    match m, n with
-    | [], [] -> true
-    | h1::t1, h2::t2 -> if List.length h1 = List.length h2 then check_dimension t1 t2
-                        else false
-    | [], _ -> false
-    | _, [] -> false
-
-(*Creates the s_expr list list of dimensions row col with expression f in every position*)
-let create_matrix row col f =
-    let rec make_rows c acc = if c = 0 then acc else make_rows (c-1) (f::acc) in
-    let rows = make_rows col [] in
-    let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
-    combine_rows row []
-
-(* Returns the transpose of a matrix*)
-let rec trans_matrix = function
-  | [] -> []
-  | []::t -> trans_matrix t
-  | (h::t1)::t2 -> (h::(List.map List.hd t2))::trans_matrix (t1::(List.map List.tl t2))
-  
 (*Adds one matrices lists to the other, takes in the list list instead of the SMatrix type*)
-let rec add_matrices m n =
+(*NOTE: the 'and's mean tht the functions are dependently recursive so you can't just stick
+other functions between them. That is why it didn't compile
+This function does belong here becuase it relies on plus and plus
+relies on it. However, I have stuck the other functions higher up.*)
+and add_matrices m n =
     match m, n with
     | [], [] -> []
     | h1::t1, h2::t2 -> let rec helper l1 l2 =
@@ -226,7 +233,7 @@ let rec deriv s1 s2 =
 
 
 
-let rec bin_op op s1 s2 =
+let bin_op op s1 s2 =
     match op with
     | Plus   -> plus (s1, s2)
     | Times  -> times (s1, s2)
@@ -235,7 +242,7 @@ let rec bin_op op s1 s2 =
     | Divide -> times (s1, pow(s2, SFloat (-1.)))
     | Deriv  -> deriv s1 s2
 
-and un_op op s =
+let un_op op s =
     match op with
     | Neg       -> times (SFloat (-1.), s)
     | Sin       -> SSin s
@@ -251,7 +258,7 @@ and un_op op s =
     | EigValue  -> failwith "TODO"
     | RRef      -> failwith "TODO"
 
-and eval = function
+let rec eval = function
     | Float  f            -> SFloat f
     | Var    v            -> SVar v
     | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
