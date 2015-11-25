@@ -47,8 +47,9 @@ let unbox = function
 
 (*Determines if two lists of multiplied terms can be simplified with a new constant coefficient*)
 let combinable l1 l2 =
-    (List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l1))) true l2)
-    &&(List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l2))) true l1)
+      let same l1' l2' = List.fold_left (fun accum x -> accum &&(is_float x ||(List.exists (fun a -> a = x) l1'))) true l2' in
+      same l1 l2 && same l2 l1
+
 
 (*[combine l1 l2] returns a float with constants from both lists added together*)
 let combine (l1: s_expr list) (l2: s_expr list) : s_expr=
@@ -137,7 +138,6 @@ and times = function
 | _,  SFloat 0.         -> SFloat 0.
 | SFloat 1., s          -> s
 | s, SFloat 1.          -> s
-| STimes l1, STimes l2  -> STimes (List.fold_left times_help l2 l1)
 | STimes l, s           -> STimes (times_help l s)
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]
@@ -161,16 +161,7 @@ let rec deriv s1 s2 =
   | SPlus (h::t), SVar x'  -> let l1 = deriv h s2 in
                               let l2 = deriv (SPlus t) s2 in
                               s_plus [l1; l2]
-  | SPow (e1, e2), SVar x' -> (match e1 with            (*Note: There are a number of cases I'm not sure about here*)
-                              | SE -> s_times [pow(e1, e2); deriv e2 s2]
-                              | SPI -> s_times [pow (e1, e2); SLog e1; deriv e2 s2]
-                              | SFloat a -> s_times  [pow (e1, e2); SLog (SFloat a); deriv e2 s2]
-                              | SVar x-> if (x = x') then
-                                s_times [e2; pow(e1, s_plus [e2; SFloat (-1.)]); deriv e1 s2]
-                                else s_times [pow (e1, e2); SLog e1; deriv e2 s2] 
-                              | SPlus x -> failwith "TODO"
-                              | STimes x -> failwith "TODO"
-                              | _ -> failwith "TODO")
+  | SPow (f, g), SVar _ -> times(pow(f,g),plus(times(deriv g s2, SLog(f)), s_times[g; (deriv f s2); pow(f, SFloat (-1.))]))
   | SMatrix x, SVar x' -> failwith "TODO"
   | SSin x, SVar x' -> (match x with
               | SFloat v -> SFloat 0.
