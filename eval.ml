@@ -105,6 +105,8 @@ and pow = function
 | s, SFloat 0.                    -> SFloat 1.
 | SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
 | SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
+| STimes [h], x -> pow(h,x)
+| STimes (h::t), x -> times(pow(h,x),pow(STimes t,x))
 | s1, s2   -> SPow (s1, s2)
 
 
@@ -113,8 +115,8 @@ and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
     let distr s l = List.fold_left (fun accum x -> plus(times(x,s), accum)) (SPlus []) l in
     match e1, e2 with
     | SFloat a, SFloat b ->  Some (SFloat (a *. b))
-    | x, SPow(s, y) when x = s    -> Some (pow (s, unbox (plus (y, SFloat 1.))))
-    | SPow(s, y), x when x = s    -> Some (pow (s, unbox (plus (y, SFloat 1.))))
+    | x, SPow(s, y) when x = s    ->print_endline "aa";Some (pow (s, unbox (plus (y, SFloat 1.))))
+    | SPow(s, y), x when x = s    ->print_endline "b"; Some (pow (s, unbox (plus (y, SFloat 1.))))
     | SPow (s1, x), SPow (s2, y) when s1 = s2 -> Some (pow (s1, unbox (plus (x,y))))
     | SPlus l1, SPlus l2 -> Some ( (List.fold_left (fun accum x -> plus(accum, (distr x l2))) (SPlus []) l1))
     | a, b when a = b -> Some (pow (e1, SFloat 2.))
@@ -138,12 +140,15 @@ and times = function
 | _,  SFloat 0.         -> SFloat 0.
 | SFloat 1., s          -> s
 | s, SFloat 1.          -> s
+| STimes l1, STimes l2  -> STimes (List.fold_left times_help l2 l1)
 | STimes l, s           -> STimes (times_help l s)
 | s, STimes l           -> STimes (times_help l s)
 | s1, s2                -> match compare_mult s1 s2 with Some e -> e | None -> STimes [s1;s2]
 
 let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes []) l)
 let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
+
+
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
 (*NOTE: For future, use the functions s_times, s_plus, and pow instead of STimes, SPlus, and SPow when constructing new
@@ -151,33 +156,19 @@ lists of expressions. pow can directly replace SPow. s_times can directly replac
 *)
 let rec deriv s1 s2 =
   match s1, s2 with
-  | SFloat x, _ -> SFloat 0.
+  | SFloat _, _ | SPI, SVar _ | SE, SVar _ -> SFloat 0.
   | SVar x, SVar x' -> if (x=x') then (SFloat 1.) else SFloat 0.
   | STimes [h], SVar x' -> deriv h s2
   | STimes (h::t), SVar x' -> let l1 = s_times [(deriv h s2);STimes t] in
                               let l2 = s_times [h;deriv (STimes t) s2] in
                               s_plus [l1; l2]
   | SPlus [h], SVar x' -> deriv h s2
-  | SPlus (h::t), SVar x'  -> let l1 = deriv h s2 in
-                              let l2 = deriv (SPlus t) s2 in
-                              s_plus [l1; l2]
+  | SPlus (h::t), SVar x'  -> s_plus [deriv h s2; deriv (SPlus t) s2]
   | SPow (f, g), SVar _ -> times(pow(f,g),plus(times(deriv g s2, SLog(f)), s_times[g; (deriv f s2); pow(f, SFloat (-1.))]))
   | SMatrix x, SVar x' -> failwith "TODO"
-  | SSin x, SVar x' -> (match x with
-              | SFloat v -> SFloat 0.
-              | SVar v -> if (v = x') then (SCos x) else (SFloat 0.)
-              | _ -> s_times [SCos x; deriv x s2] )
-  | SCos x, SVar x' -> (match x with
-              | SFloat x -> SFloat 0.
-              | SVar v -> if (v = x') then times ((SFloat (-1.)),(SSin x)) else SFloat 0.
-              | _ -> s_times [SFloat (-1.); SSin x; deriv x s2] )
-  | SLog x, SVar x' -> (match x with
-                   | SFloat v -> SFloat 0.
-                   | SVar v -> if (v=x') then (pow (x, SFloat (-1.))) else SFloat 0.
-                   | _ -> s_times [pow (x, SFloat (-1.)); deriv x s2])
-
-  | SPI, SVar x' -> SFloat 0.
-  | SE, SVar x' -> SFloat 0.
+  | SSin x, SVar x' -> s_times [SCos x; deriv x s2] 
+  | SCos x, SVar x' ->  s_times [SFloat (-1.); SSin x; deriv x s2]
+  | SLog x, SVar x' ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _ -> failwith "This shouldn't happen"
 
 
