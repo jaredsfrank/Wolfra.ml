@@ -10,13 +10,17 @@ let rec format_expr f e =
     match e with
     | SFloat n -> Format.fprintf f "@[%.2f@]" n
     | SVar x -> Format.fprintf f "@[%s@]" x
-    | STimes [] -> Format.fprintf f "@[@]"
-    | STimes [h] -> Format.fprintf f "@[%a@]" (bracket e) h
-    | STimes (h::t) -> Format.fprintf f "@[%a*%a@]" (bracket e) h (bracket e) (STimes t)
+    | STimes (c,[]) -> Format.fprintf f "@[%.2f@]" c
+    | STimes (1.,[h]) -> Format.fprintf f "@[%a@]" (bracket e) h
+    | STimes (-1.,[h]) -> Format.fprintf f "@[-%a@]" (bracket e) h
+    | STimes (c,[h]) -> Format.fprintf f "@[%.2f%a@]" c (bracket e) h
+    | STimes (1., h::t) -> Format.fprintf f "@[%a*%a@]" (bracket e) h (bracket e) (STimes (1.,t))
+    | STimes (c, h::t) -> Format.fprintf f "@[%.2f%a*%a@]" c (bracket e) h (bracket e) (STimes (1.,t))
     | SPlus [] -> Format.fprintf f "@[@]"
     | SPlus [h] -> Format.fprintf f "@[%a@]" (bracket e) h
     | SPlus (h1::h2::t) -> (match h2 with 
                               | SFloat x when x<0. -> Format.fprintf f "@[%a-%a@]" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
+                              | STimes (c,x) when c<0. -> Format.fprintf f "@[%a-%a@]" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
                               | _ -> Format.fprintf f "@[%a+%a@]" (bracket e) h1 (bracket e) (SPlus( h2::t)))
     | SPow (s1,s2) -> Format.fprintf f "@[(%a)^(%a)@]" (bracket e) s1 (bracket e) s2
     | SMatrix x ->  failwith "TODO"

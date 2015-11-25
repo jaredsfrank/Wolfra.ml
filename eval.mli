@@ -4,7 +4,7 @@ open Ast
 type s_expr = 
     | SFloat of float
     | SVar of var
-    | STimes of s_expr list
+    | STimes of float* s_expr list
     | SPlus of s_expr list
     | SPow of s_expr * s_expr
     | SMatrix of s_expr list list
