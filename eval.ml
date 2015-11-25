@@ -85,10 +85,51 @@ and plus_help l s =
                 | Some (SFloat 0.) -> t
                 | Some e -> e::t
                 | None -> h::(plus_help t s))
+                
+(* Checks a matrix's lists to make sure each row has the same number of columns*)
+let rec check_dim m f =
+    match m with
+    | [] -> true
+    | h::t -> if List.length h = f then check_dim t f
+              else false
+
+(* Checks two matrices' lists to make sure their dimensions are the same*)
+let rec check_dimension m n =
+    match m, n with
+    | [], [] -> true
+    | h1::t1, h2::t2 -> if List.length h1 = List.length h2 then check_dimension t1 t2
+                        else false
+    | [], _ -> false
+    | _, [] -> false
+
+(*Creates the s_expr list list of dimensions row col with expression f in every position*)
+let create_matrix row col f =
+    let rec make_rows c acc = if c = 0 then acc else make_rows (c-1) (f::acc) in
+    let rows = make_rows col [] in
+    let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
+    combine_rows row []
+
+(*Adds one matrices lists to the other, takes in the list list instead of the SMatrix type*)
+let rec add_matrices m n =
+    match m, n with
+    | [], [] -> []
+    | h1::t1, h2::t2 -> let rec helper l1 l2 =
+                        (match l1, l2 with
+                        | [], [] -> []
+                        | s1::d1, s2::d2 -> (plus (s1,s2))::(helper d1 d2)
+                        | _, _ -> failwith "Not correct # of columns")
+                        in (helper h1 h2)::(add_matrices t1 t2)
+    | _, _ -> failwith "Not correct # of rows"
 
 (* Returns a fully simplified expression from the added expressions*)
 and plus = function
 | SFloat a, SFloat b  -> SFloat(a+.b)
+| SMatrix m, SFloat f -> if (check_dim m (List.length (List.hd m))) then
+                           (let fmatrix = create_matrix (List.length m)
+                           (List.length (List.hd m)) (SFloat f) in
+                             SMatrix(add_matrices m fmatrix))
+                         else failwith "Not correct dimensions"
+| SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
 | SFloat 0., s        -> s
 | s, SFloat 0.        -> s
 | SPlus l1, SPlus l2  -> SPlus (List.fold_left plus_help l2 l1)
