@@ -109,6 +109,12 @@ let create_matrix row col f =
     let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
     combine_rows row []
 
+(* Returns the transpose of a matrix*)
+let rec trans_matrix = function
+  | [] -> []
+  | []::t -> trans_matrix t
+  | (h::t1)::t2 -> (h::(List.map List.hd t2))::trans_matrix (t1::(List.map List.tl t2))
+  
 (*Adds one matrices lists to the other, takes in the list list instead of the SMatrix type*)
 let rec add_matrices m n =
     match m, n with
@@ -235,7 +241,11 @@ and un_op op s =
     | Sin       -> SSin s
     | Cos       -> SCos s
     | Log       -> SLog s
-    | Trans     -> failwith "TODO"
+    | Trans     -> (match s with
+                   | SMatrix m -> if check_dim m (List.length (List.hd m)) then
+                                    SMatrix(trans_matrix m)
+                                  else failwith "Not correct dimensions"
+                   | _ -> failwith "Can't take the transpose of non-matrices")
     | Inv       -> failwith "TODO"
     | EigVector -> failwith "TODO"
     | EigValue  -> failwith "TODO"
