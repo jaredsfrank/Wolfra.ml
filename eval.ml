@@ -324,6 +324,8 @@ let un_op op s =
                                     SMatrix(trans_matrix m)
                                   else failwith "Not correct dimensions"
                    | _ -> failwith "Can't take the transpose of non-matrices")
+    | Det       -> (match s with SMatrix m -> determinant m | _ ->
+                            failwith "Can't take the determinant of a non-matrix")
     | Inv       -> failwith "TODO"
     | EigVector -> failwith "TODO"
     | EigValue  -> failwith "TODO"
@@ -334,7 +336,15 @@ let rec eval = function
     | Var    v            -> SVar v
     | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
     | UnOp   (op, e)      -> un_op op (eval e)
-    | Matrix m            -> failwith "TODO"
+    | Matrix m            -> let rec helper m =
+                             (match m with
+                             | [] -> []
+                             | h::t -> let rec helper1 m1 =
+                                       (match m1 with
+                                        | [] -> []
+                                        | s::e -> (eval s)::helper1 e) in 
+                                        helper1 h::helper t) in 
+                                        SMatrix(helper m)
     | Subst  (Float f,Var v,e)      -> subst (v,f) (eval e)
     | Subst (Var v, Float f, e)     -> subst (v,f) (eval e)
     | Subst (_)           -> failwith "Cannot substitute that"
