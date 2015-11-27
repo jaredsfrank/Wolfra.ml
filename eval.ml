@@ -115,15 +115,15 @@ and plus_help l s =
 other functions between them. That is why it didn't compile
 This function does belong here becuase it relies on plus and plus
 relies on it. However, I have stuck the other functions higher up.*)
-and add_matrices m n =
+and scalar_matrices f m n =
     match m, n with
     | [], [] -> []
     | h1::t1, h2::t2 -> let rec helper l1 l2 =
                         (match l1, l2 with
                         | [], [] -> []
-                        | s1::d1, s2::d2 -> (plus (s1,s2))::(helper d1 d2)
+                        | s1::d1, s2::d2 -> (f (s1,s2))::(helper d1 d2)
                         | _, _ -> failwith "Not correct # of columns")
-                        in (helper h1 h2)::(add_matrices t1 t2)
+                        in (helper h1 h2)::(scalar_matrices f t1 t2)
     | _, _ -> failwith "Not correct # of rows"
 
 (* Returns a fully simplified expression from the added expressions*)
@@ -132,14 +132,14 @@ and plus = function
 | SMatrix m, SFloat f -> if (check_dim m (List.length (List.hd m))) then
                            (let fmatrix = create_matrix (List.length m)
                            (List.length (List.hd m)) (SFloat f) in
-                             SMatrix(add_matrices m fmatrix))
+                             SMatrix(scalar_matrices plus m fmatrix))
                          else failwith "Not correct dimensions"
 | SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
 | SMatrix m, SMatrix n ->
                   if (check_dimension m n)&&
                      (check_dim m (List.length (List.hd m)))&&
                      (check_dim n (List.length (List.hd n))) then
-                     SMatrix(add_matrices m n)
+                     SMatrix(scalar_matrices plus m n)
                   else failwith "Not correct dimensions"
 | SFloat 0., s        -> s
 | s, SFloat 0.        -> s
@@ -186,6 +186,13 @@ and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
 and times (e1,e2) = 
   match e1,e2 with
   | SFloat a, STimes(c,l) -> unbox(STimes (c*.a,l))
+  | SFloat f, SMatrix m   -> if check_dim m (List.length (List.hd m)) then
+                           (let fmatrix = create_matrix (List.length m)
+                           (List.length (List.hd m)) (SFloat f) in
+                             SMatrix(scalar_matrices times m fmatrix))
+                           else
+                             failwith "Not correct dimensions"
+  | SMatrix m, SFloat f   -> times (SFloat f, SMatrix m)
   | STimes(c,l), SFloat a -> unbox(STimes (c*.a,l))
   | SFloat a, SFloat b    -> SFloat(a*.b)
   | SFloat a, e           -> unbox(match compare_mult e1 e2 with Some e -> e | None -> STimes (a,[e]))
@@ -201,6 +208,23 @@ let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 let rec remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
+
+(* Matrix multiplication on Matrix m with nxm and Matrix n with pxq, m must = p*)
+let matrix_mult m n =
+  let x0 = List.length m in
+  let y0 = List.length n in
+  let x1 = (if x0 > 0 then List.length (List.hd m) else failwith "Not correct dimensions") in
+  if x1 <> y0 then failwith "Not correct dimensions"
+  else
+    let tn = trans_matrix n in
+    let rec helper mat tnat =
+    (match mat with
+    | [] -> []
+    | h::t -> let rec helper2 ma tna =
+              (match tna with
+                | [] -> []
+                | s::e -> s_plus(List.hd (scalar_matrices times [ma] [s]))::helper2 ma e)
+              in helper2 h (tnat)::helper t tnat) in helper m tn
 
 (* Removes the ith column and the first row in a matrix (for determinants)*)
 let remove m i =
