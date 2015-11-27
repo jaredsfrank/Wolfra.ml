@@ -8,7 +8,7 @@ type binop =
 
 type unop = 
     | Neg | Sin | Cos | Log
-    | Trans | Inv | EigVector | EigValue | RRef 
+    | Trans | Det | Inv | EigVector | EigValue | RRef 
 
 
 type expr =                              
