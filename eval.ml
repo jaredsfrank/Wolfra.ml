@@ -290,8 +290,8 @@ let rec deriv s1 s2 =
 let rec integrate s1 s2 = 
  match s1, s2 with
  | SFloat f, SVar x -> times(SFloat f, s2)
- | SVar x, SVar x' -> failwith "TODO"
- | STimes (c,[h]), SVar _    -> failwith "TODO"
+ | SVar x, SVar x' -> if (x=x') then (times(SFloat (1./.2.), pow(s1, SFloat 2.)))
+                      else times(s1, s2) 
  | STimes (c,h::t), SVar _ -> failwith "TODO"
  | SPlus [h], SVar _     -> failwith "TODO"
  | SPlus (h::t), SVar _  -> failwith "TODO"
