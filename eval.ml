@@ -287,6 +287,23 @@ let rec deriv s1 s2 =
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"
 
+let rec integrate s1 s2 = 
+ match s1, s2 with
+ | SFloat f, SVar x -> times(SFloat f, s2)
+ | SVar x, SVar x' -> failwith "TODO"
+ | STimes (c,[h]), SVar _    -> failwith "TODO"
+ | STimes (c,h::t), SVar _ -> failwith "TODO"
+ | SPlus [h], SVar _     -> failwith "TODO"
+ | SPlus (h::t), SVar _  -> failwith "TODO"
+ | SPow (f, g), SVar _   -> failwith "TODO"
+ | SMatrix x, SVar _     -> failwith "TODO"
+ | SSin x, SVar _        -> failwith "TODO"
+ | SCos x, SVar _        ->  failwith "TODO"
+ | SLog x, SVar _        ->  failwith "TODO"
+ | _, _                  -> failwith "This shouldn't happen"
+
+
+
 let rec subst ((k,v): string * float ) e =
   match e with
   | SFloat f ->  e
