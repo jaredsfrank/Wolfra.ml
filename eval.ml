@@ -287,12 +287,20 @@ let rec deriv s1 s2 =
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"
 
-let rec integrate s1 s2 = 
+
+let rec by_parts u dv s2 =
+                        let du = deriv u s2 in let v = integrate dv s2 in
+                        plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)
+
+and integrate s1 s2 = 
  match s1, s2 with
  | SFloat f, SVar x -> times(SFloat f, s2)
  | SVar x, SVar x' -> if (x=x') then (times(SFloat (1./.2.), pow(s1, SFloat 2.)))
                       else times(s1, s2) 
- | STimes (c,h::t), SVar _ -> failwith "TODO"
+ | STimes (c,[h]), SVar _   -> times(SFloat c, integrate h s2)
+ | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (SSin x) s2
+ | STimes (c,(SCos x)::t), SVar _ -> by_parts (STimes(c,t)) (SCos x) s2
+ | STimes (c,h::t), SVar _ -> by_parts h (STimes(c,t)) s2
  | SPlus [h], SVar _     -> integrate h s2
  | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
  | SPow (f, g), SVar _   -> failwith "TODO"
