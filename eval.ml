@@ -297,8 +297,12 @@ let rec integrate s1 s2 =
  | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
  | SPow (f, g), SVar _   -> failwith "TODO"
  | SMatrix x, SVar _     -> failwith "TODO"
- | SSin x, SVar _        -> failwith "TODO"
- | SCos x, SVar _        -> failwith "TODO"
+ | SSin x, SVar _        -> (match x with 
+                            | SVar v -> times(SFloat (-1.), SCos x)
+                            | _ -> failwith "TODO")
+ | SCos x, SVar _        -> (match x with 
+                            | SVar v -> (SSin x)
+                            | _ -> failwith "TODO")
  | SLog x, SVar _        -> failwith "TODO"
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
