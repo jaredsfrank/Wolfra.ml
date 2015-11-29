@@ -316,7 +316,10 @@ and integrate s1 s2 =
  | SCos x, SVar x'        -> (match x with 
                             | SVar v when v = x' -> (SSin x)
                             | _ -> failwith "TODO")
- | SLog x, SVar _        -> failwith "TODO" 
+ | SLog x, SVar x'       -> (match x with 
+                            | SVar v when v = x' -> plus(times(x, SLog x), times(SFloat (-1.), x))
+                            | SVar v when v <> x' -> times(SLog x, SVar x')
+                            | _ -> failwith "TODO")
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
  | _, _                  -> failwith "This shouldn't happen"
