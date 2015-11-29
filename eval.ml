@@ -329,6 +329,7 @@ let bin_op op s1 s2 =
     | Pow    -> pow (s1, s2)
     | Divide -> times (s1, pow(s2, SFloat (-1.)))
     | Deriv  -> deriv s1 s2
+    | Integrate -> integrate s1 s2
 
 let un_op op s =
     match op with
