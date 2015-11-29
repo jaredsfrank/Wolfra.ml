@@ -6,7 +6,7 @@ type constant = string
 
 (*binary operations*)
 type binop = 
-    | Plus | Times | Minus | Divide | Pow | Deriv
+    | Plus | Times | Minus | Divide | Pow | Deriv | Integrate
 
 (*unary operations*)
 type unop = 
