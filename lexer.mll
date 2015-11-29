@@ -34,6 +34,7 @@ rule token = parse
   | "pi" { PI }
   | "wrt" {DERIV}
   | ")/d"  { DERIV2 }
+  | "integrate" { INTEGRATE }
   | "e" { E }
   | '('     { LPAREN }
   | ')'     { RPAREN }
