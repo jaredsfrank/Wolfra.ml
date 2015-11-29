@@ -288,6 +288,8 @@ let rec deriv s1 s2 =
   | _, _                  -> failwith "This shouldn't happen"
 
 
+let is_constant s = true (*JUST A PLACEHOLDER. STILL NEEDS TO BE DONE*)
+
 let rec by_parts u dv s2 =
                         let du = deriv u s2 in let v = integrate dv s2 in
                         plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)
@@ -303,15 +305,18 @@ and integrate s1 s2 =
  | STimes (c,h::t), SVar _ -> by_parts h (STimes(c,t)) s2
  | SPlus [h], SVar _     -> integrate h s2
  | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
+ | SPow (SVar x, SFloat (-1.)), SVar x' when x = x' -> SLog(SVar x)
+ | SPow (SVar x, g), SVar x' when x = x' && is_constant g ->  times(pow(SVar x, plus(SFloat 1., g)),pow(plus(SFloat 1., g), SFloat (-1.)))
+ | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
  | SPow (f, g), SVar _   -> failwith "TODO"
  | SMatrix x, SVar _     -> failwith "TODO"
- | SSin x, SVar _        -> (match x with 
-                            | SVar v -> times(SFloat (-1.), SCos x)
+ | SSin x, SVar x'        -> (match x with 
+                            | SVar v when v = x'-> times(SFloat (-1.), SCos x)
                             | _ -> failwith "TODO")
- | SCos x, SVar _        -> (match x with 
-                            | SVar v -> (SSin x)
+ | SCos x, SVar x'        -> (match x with 
+                            | SVar v when v = x' -> (SSin x)
                             | _ -> failwith "TODO")
- | SLog x, SVar _        -> failwith "TODO"
+ | SLog x, SVar _        -> failwith "TODO" 
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
  | _, _                  -> failwith "This shouldn't happen"
