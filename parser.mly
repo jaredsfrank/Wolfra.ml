@@ -34,6 +34,7 @@ let parse_error _ =
 %token DERIVE
 %token DERIV2
 %token DERIVE2
+%token INTEGRATE
 %token <string> VAR
 %token <string> FLOAT
 %token LPAREN RPAREN
@@ -72,6 +73,7 @@ expr:
   | expr MINUS expr     { BinOp (Minus,  $1, $3) }
   | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
   | DERIVE2 expr DERIV2 expr     { BinOp  (Deriv, $2, $4) }
+  | INTEGRATE expr DERIV expr     { BinOp  (Integrate, $2, $4) }
   | VAR    { Var $1 }
   | PI      { PI }
   | E      { E }
