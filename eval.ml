@@ -293,13 +293,15 @@ let rec integrate s1 s2 =
  | SVar x, SVar x' -> if (x=x') then (times(SFloat (1./.2.), pow(s1, SFloat 2.)))
                       else times(s1, s2) 
  | STimes (c,h::t), SVar _ -> failwith "TODO"
- | SPlus [h], SVar _     -> failwith "TODO"
- | SPlus (h::t), SVar _  -> failwith "TODO"
+ | SPlus [h], SVar _     -> integrate h s2
+ | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
  | SPow (f, g), SVar _   -> failwith "TODO"
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar _        -> failwith "TODO"
- | SCos x, SVar _        ->  failwith "TODO"
- | SLog x, SVar _        ->  failwith "TODO"
+ | SCos x, SVar _        -> failwith "TODO"
+ | SLog x, SVar _        -> failwith "TODO"
+ | SPI, SVar _           -> times(SPI, s2)
+ | SE, SVar _            -> times(SE, s2)
  | _, _                  -> failwith "This shouldn't happen"
 
 
