@@ -3,7 +3,7 @@ type constant = string
 
 
 type binop = 
-    | Plus | Times | Minus | Divide | Pow | Deriv 
+    | Plus | Times | Minus | Divide | Pow | Deriv | Integrate
 
 
 type unop = 
