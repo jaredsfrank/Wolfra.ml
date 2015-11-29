@@ -315,7 +315,7 @@ and integrate s1 s2 =
                             | SVar v when v <> x'-> times(SSin x, SVar x')
                             | _ -> failwith "TODO")
  | SCos x, SVar x'        -> (match x with 
-                            | SVar v when v = x' -> times(SFLoat (-1.), SSin x)
+                            | SVar v when v = x' -> times(SFloat (-1.), SSin x)
                             | SVar v when v <> x' -> times(SCos x, SVar x')
                             | _ -> failwith "TODO")
  | SLog x, SVar x'       -> (match x with 
