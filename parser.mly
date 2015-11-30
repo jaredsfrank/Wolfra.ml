@@ -20,6 +20,8 @@ let parse_error _ =
 %token MULT
 %token COS
 %token PI
+%token SEMI
+%token COMMA
 %token E
 %token DECIMAL
 %token SIN
@@ -38,19 +40,35 @@ let parse_error _ =
 %token <string> VAR
 %token <string> FLOAT
 %token LPAREN RPAREN
+%token LBRACKET RBRACKET
+%token TRANS
+%token DET
+%token EV
+%token EVAL
+%token RREF
+%token INV
 %token EOF
 
 
 %left PLUS MINUS
 %left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
+%left TRANS DET INV EV EVAL RREF
 %right POW DECIMAL
-%nonassoc VAR LBRACE FLOAT LPAREN PI E SUBST FOR IN
+%nonassoc VAR LBRACE FLOAT LPAREN PI E SUBST FOR IN COMMA SEMI LBRACKET
+
+
 
 
 /* entry point */
 
 %start expr
 %type <Ast.expr> expr
+
+%start m_list
+%type <Ast.expr list> m_list
+
+%start matrix
+%type <Ast.expr list list> matrix
 
 
 %%
@@ -77,8 +95,31 @@ expr:
   | VAR    { Var $1 }
   | PI      { PI }
   | E      { E }
+  | LBRACKET matrix RBRACKET {Matrix $2}
+  | TRANS expr {UnOp (Trans, $2)}
+  | DET expr {UnOp (Det, $2)}
+  | INV expr {UnOp (Inv, $2)}
+  | EV expr {UnOp (EigVector, $2)}
+  | EVAL expr {UnOp (EigValue, $2)}
+  | RREF expr {UnOp (RRef, $2)}
 ;
 
 
 
+matrix:
+  | {[[]]}
+  | m_list {[$1]}
+  | matrix_inside {$1}
+;
+
+matrix_inside:
+  | m_list {[$1]}
+  | m_list SEMI matrix_inside {$1::$3}
+;
+
+
+m_list:
+  | expr {[$1]}
+  | expr COMMA m_list {$1::$3}
+;
 

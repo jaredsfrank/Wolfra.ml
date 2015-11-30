@@ -40,7 +40,17 @@ rule token = parse
   | ')'     { RPAREN }
   | "sub" {SUBST}
   | "for"      {FOR}
+  | ","        {COMMA}
+  | ";"        {SEMI}
   | "in"       {IN}
+  | "["    { LBRACKET }
+  | "]"    { RBRACKET }
+  | "transpose"  {TRANS}
+  | "det"      { DET }
+  | "inverse"     { INV }
+  | "eigenvector" {EV}
+  | "eigenvalue" {EVAL}
+  | "rref" {RREF}
   | letters as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }

@@ -7,6 +7,16 @@ let rec format_expr f e =
     let bracket parent f e =
         Format.fprintf f "%a" format_expr e
     in
+    let rec print_list f = function
+        | [] -> Format.fprintf f "@[@]"
+        | [h] -> Format.fprintf f "@[%a@]" (bracket e) h
+        | h::t -> Format.fprintf f "@[%a,%a@]" (bracket e) h (print_list) t
+    in
+    let rec print_list_list f = function
+        | [] -> Format.fprintf f "@[@]"
+        | [h] -> Format.fprintf f "@[%a@]" print_list h
+        | h::t -> Format.fprintf f "@[%a;%a@]" print_list h (print_list_list) t
+    in
     match e with
     | SFloat n -> Format.fprintf f "@[%.2f@]" n
     | SVar x -> Format.fprintf f "@[%s@]" x
@@ -23,7 +33,9 @@ let rec format_expr f e =
                               | STimes (c,x) when c<0. -> Format.fprintf f "@[%a-%a@]" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
                               | _ -> Format.fprintf f "@[%a+%a@]" (bracket e) h1 (bracket e) (SPlus( h2::t)))
     | SPow (s1,s2) -> Format.fprintf f "@[(%a)^(%a)@]" (bracket e) s1 (bracket e) s2
-    | SMatrix x ->  failwith "TODO"
+    | SMatrix []  -> Format.fprintf f "@[@]"
+    | SMatrix [h] -> Format.fprintf f "@[[%a@]]" print_list h
+    | SMatrix (h::t) -> Format.fprintf f "@[[%a;%a@]]" print_list h print_list_list t
     | SSin s ->  Format.fprintf f "@[sin(%a)@]" (bracket e) s
     | SCos s ->  Format.fprintf f "@[cos(%a)@]" (bracket e) s
     | SLog s ->  Format.fprintf f "@[ln(%a)@]" (bracket e) s

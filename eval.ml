@@ -297,7 +297,7 @@ let rec by_parts u dv s2 =
 and integrate s1 s2 = 
  match s1, s2 with
  | SFloat f, SVar x -> times(SFloat f, s2)
- | SVar x, SVar x' -> if (x=x') then (times(SFloat (1./.2.), pow(s1, SFloat 2.)))
+ | SVar x, SVar x' -> if (x=x') then (times(SFloat 0.5, pow(s1, SFloat 2.)))
                       else times(s1, s2) 
  | STimes (c,[h]), SVar _   -> times(SFloat c, integrate h s2)
  | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (SSin x) s2
