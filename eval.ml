@@ -193,6 +193,7 @@ and times (e1,e2) =
                            else
                              failwith "Not correct dimensions"
   | SMatrix m, SFloat f   -> times (SFloat f, SMatrix m)
+  | SMatrix m, SMatrix n  -> SMatrix(matrix_mult m n)
   | STimes(c,l), SFloat a -> unbox(STimes (c*.a,l))
   | SFloat a, SFloat b    -> SFloat(a*.b)
   | SFloat a, e           -> unbox(match compare_mult e1 e2 with Some e -> e | None -> STimes (a,[e]))
@@ -202,15 +203,15 @@ and times (e1,e2) =
   | _, STimes (c,l)         -> unbox(STimes (c,times_help l e1))
   | s1, s2                -> unbox(match compare_mult s1 s2 with Some e -> e | None -> STimes (1.,[s1;s2]))
 
-let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
-let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
+and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
+and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
-let rec remove_at n = function
+and rec remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
 
 (* Matrix multiplication on Matrix m with nxm and Matrix n with pxq, m must = p*)
-let matrix_mult m n =
+and matrix_mult m n =
   let x0 = List.length m in
   let y0 = List.length n in
   let x1 = (if x0 > 0 then List.length (List.hd m) else failwith "Not correct dimensions") in
