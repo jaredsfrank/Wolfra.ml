@@ -172,12 +172,13 @@ and times (e1,e2) =
   | _, STimes (c,l)         -> unbox(STimes (c,times_help l e1))
   | s1, s2                -> unbox(match compare_mult s1 s2 with Some e -> e | None -> STimes (1.,[s1;s2]))
 
-let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
-let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
+and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
+and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
-let rec remove_at n = function
+and remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
+
 
 
 (* Removes the ith column and the first row in a matrix (for determinants)*)
@@ -274,7 +275,15 @@ let rec subst ((k,v): string * float ) e =
   | SPlus [] -> SFloat 0.
   | SPlus (h::t) -> plus(subst (k,v) h, subst (k,v) (SPlus t))
   | SPow (e1,e2) -> pow (subst (k,v) e1, subst  (k,v) e2)
-  | SMatrix _ -> failwith "TODO"
+  | SMatrix m -> let rec helper m =
+                             (match m with
+                             | [] -> []
+                             | h::t -> let rec helper1 m1 =
+                                       (match m1 with
+                                        | [] -> []
+                                        | s::e -> (subst (k,v) s)::helper1 e) in
+                                        helper1 h::helper t) in
+                                        SMatrix(helper m)
   | SSin x -> SSin (subst (k,v) x)
   | SCos x -> SCos (subst (k,v) x)
   | SLog x -> SLog (subst (k,v) x)
@@ -300,11 +309,16 @@ let un_op op s =
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m 
     | Det, SMatrix m       -> failwith "Err Square"
-    | Inv, SMatrix m       -> failwith "TODO"
+    | Inv, SMatrix m when determinant m = SFloat 0. -> failwith "Determinant = 0"
+    | Inv, SMatrix [[h1;h2];[h3;h4]]  ->  let d = determinant [[h1;h2];[h3;h4]] in
+                                          times(pow(d ,SFloat (-1.)),
+                                          SMatrix([[h4; times(h2, SFloat (-1.))];
+                                          [times(h3 ,SFloat (-1.));h1]]))
     | EigVector, SMatrix m -> failwith "TODO"
     | EigValue, SMatrix m  -> failwith "TODO"
     | RRef, SMatrix m      -> failwith "TODO"
     | _, _      -> failwith "Err Gen"
+
 
 let rec eval = function
     | Float  f                -> SFloat f
