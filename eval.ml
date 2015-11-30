@@ -281,7 +281,7 @@ let rec deriv s1 s2 =
   | SPlus (h::t), SVar _  -> s_plus [deriv h s2; deriv (SPlus t) s2]
   | SPow (f, g), SVar _   -> times(pow(f,g),plus(times(deriv g s2, SLog(f)), 
                                s_times[g; (deriv f s2); pow(f, SFloat (-1.))]))
-  | SMatrix x, SVar _     -> failwith "TODO"
+  | SMatrix x, SVar _     -> failwith "Why would you take the derivative of a matrix??"
   | SSin x, SVar _        -> s_times [SCos x; deriv x s2] 
   | SCos x, SVar _        ->  s_times [SFloat (-1.); SSin x; deriv x s2]
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
