@@ -371,7 +371,18 @@ let un_op op s =
                    | _ -> failwith "Can't take the transpose of non-matrices")
     | Det       -> (match s with SMatrix m -> determinant m | _ ->
                             failwith "Can't take the determinant of a non-matrix")
-    | Inv       -> failwith "TODO"
+    | Inv       -> (match s with
+                    |SMatrix m -> if (List.length m) <> 2 || not (check_dim m 2)
+                                    then failwith "Inverse of only 2x2 matrices"
+                                  else let d = determinant m in
+                                  if d = SFloat 0. then failwith "Determinant = 0"
+                                  else times(pow(d,SFloat (-1.)),
+                                  SMatrix([[List.nth (List.nth m 1) 1;
+                                  times(List.nth (List.hd m) 1, SFloat (-1.))];
+                                  [times(List.hd (List.nth m 1) ,SFloat (-1.));
+                                  List.hd (List.hd m)]]))
+                    | _ ->
+                            failwith "Can't take inverse of a non-matrix")
     | EigVector -> failwith "TODO"
     | EigValue  -> failwith "TODO"
     | RRef      -> failwith "TODO"
