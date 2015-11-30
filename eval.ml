@@ -28,9 +28,6 @@ type s_expr =
     | SPI
 
 
-
-
-
 (*[is_float s] returns true if s is a float*)
 let is_float = function
 | SFloat _ -> true
@@ -47,21 +44,17 @@ let unbox = function
     | s -> s
 
 
-(* Checks a matrix's lists to make sure each row has the same number of columns*)
-let rec check_dim m f =
-    match m with
-    | [] -> true
-    | h::t -> if List.length h = f then check_dim t f
-              else false
+let is_square m = 
+  List.fold_left (fun b l -> (List.length l = List.length m) && b) true m
+
+let is_rect m =
+  match m with
+  | [] -> true
+  | h::t -> List.fold_left (fun b l -> (List.length l = List.length h) && b) true m
 
 (* Checks two matrices' lists to make sure their dimensions are the same*)
-let rec check_dimension m n =
-    match m, n with
-    | [], [] -> true
-    | h1::t1, h2::t2 -> if List.length h1 = List.length h2 then check_dimension t1 t2
-                        else false
-    | [], _ -> false
-    | _, [] -> false
+let rec check_dimension =
+    List.fold_left2 (fun accum a b -> accum && List.length a = List.length b) true
 
 (*Creates the s_expr list list of dimensions row col with expression f in every position*)
 let create_matrix row col f =
@@ -80,8 +73,9 @@ let rec trans_matrix = function
 
 (*Determines if two lists of multiplied terms can be simplified with a new constant coefficient*)
 let combinable l1 l2 =
-      let same l1' l2' = List.fold_left (fun accum x -> accum &&(List.exists (fun a -> a = x) l1')) true l2' in
-      same l1 l2 && same l2 l1
+  let same l1' l2' = List.fold_left (fun accum x -> accum &&(List.exists (fun a -> a = x) l1')) true l2' in
+  same l1 l2 && same l2 l1
+
 
 
 (*[compare e1 e2] returns None if e1 and e2 do not combine.
@@ -110,56 +104,31 @@ and plus_help l s =
                 | None -> h::(plus_help t s))
                 
 
-(*Adds one matrices lists to the other, takes in the list list instead of the SMatrix type*)
-(*NOTE: the 'and's mean tht the functions are dependently recursive so you can't just stick
-other functions between them. That is why it didn't compile
-This function does belong here becuase it relies on plus and plus
-relies on it. However, I have stuck the other functions higher up.*)
-and scalar_matrices f m n =
-    match m, n with
-    | [], [] -> []
-    | h1::t1, h2::t2 -> let rec helper l1 l2 =
-                        (match l1, l2 with
-                        | [], [] -> []
-                        | s1::d1, s2::d2 -> (f (s1,s2))::(helper d1 d2)
-                        | _, _ -> failwith "Not correct # of columns")
-                        in (helper h1 h2)::(scalar_matrices f t1 t2)
-    | _, _ -> failwith "Not correct # of rows"
-
 (* Returns a fully simplified expression from the added expressions*)
 and plus = function
-| SFloat a, SFloat b  -> SFloat(a+.b)
-| SMatrix m, SFloat f -> if (check_dim m (List.length (List.hd m))) then
-                           (let fmatrix = create_matrix (List.length m)
-                           (List.length (List.hd m)) (SFloat f) in
-                             SMatrix(scalar_matrices plus m fmatrix))
-                         else failwith "Not correct dimensions"
-| SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
-| SMatrix m, SMatrix n ->
-                  if (check_dimension m n)&&
-                     (check_dim m (List.length (List.hd m)))&&
-                     (check_dim n (List.length (List.hd n))) then
-                     SMatrix(scalar_matrices plus m n)
-                  else failwith "Not correct dimensions"
-| SFloat 0., s        -> s
-| s, SFloat 0.        -> s
-| SPlus l1, SPlus l2  -> SPlus (List.fold_left plus_help l2 l1)
-| SPlus l, s          -> SPlus (plus_help l s)
-| s, SPlus l          -> SPlus (plus_help l s)
-| s1, s2              -> match compare s1 s2 with Some e -> e | None -> SPlus [s1;s2]
+  | SFloat a, SFloat b  -> SFloat(a+.b)
+  | SMatrix m, SFloat f -> SMatrix (List.map (fun l -> List.map (fun x -> plus (x,SFloat f)) l) m)
+  | SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
+  | SMatrix m, SMatrix n when check_dimension m n->  SMatrix(List.map2 (fun l1 l2 -> List.map2 (fun a b -> plus(a,b)) l1 l2) m n)
+  | SFloat 0., s        -> s
+  | s, SFloat 0.        -> s
+  | SPlus l1, SPlus l2  -> SPlus (List.fold_left plus_help l2 l1)
+  | SPlus l, s          -> SPlus (plus_help l s)
+  | s, SPlus l          -> SPlus (plus_help l s)
+  | s1, s2              -> match compare s1 s2 with Some e -> e | None -> SPlus [s1;s2]
 
 
 and pow = function
-| SFloat 0., SFloat a when a < 0. -> failwith "Division by 0"
-| SFloat 0., _                    -> SFloat 0.
-| SFloat 1., _                    -> SFloat 1.
-| s, SFloat 1.                    -> s
-| s, SFloat 0.                    -> SFloat 1.
-| SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
-| SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
-| STimes (c,[h]), x -> times(pow(SFloat c,x),pow(h,x))
-| STimes (c,h::t), x -> times(pow(h,x),pow(STimes (c,t),x))
-| s1, s2   -> SPow (s1, s2)
+  | SFloat 0., SFloat a when a < 0. -> failwith "Division by 0"
+  | SFloat 0., _                    -> SFloat 0.
+  | SFloat 1., _                    -> SFloat 1.
+  | s, SFloat 1.                    -> s
+  | s, SFloat 0.                    -> SFloat 1.
+  | SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
+  | SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
+  | STimes (c,[h]), x -> times(pow(SFloat c,x),pow(h,x))
+  | STimes (c,h::t), x -> times(pow(h,x),pow(STimes (c,t),x))
+  | s1, s2   -> SPow (s1, s2)
 
 
 
@@ -183,16 +152,17 @@ and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
                 | None -> h::(times_help t exp)
                 )
 
-and times (e1,e2) = 
+and times (e1,e2) =
+  (* Dot two matrices*)
+  let dot l1 l2 = List.fold_left2 (fun accum a b -> plus(accum,times (a,b))) (SFloat 0.) l1 l2 in
+  let dot_matrices m1 m2 = 
+    try List.map (fun l -> List.map (dot l) m1) m2
+    with _ -> failwith "Err Matrix Mult" in
   match e1,e2 with
   | SFloat a, STimes(c,l) -> unbox(STimes (c*.a,l))
-  | SFloat f, SMatrix m   -> if check_dim m (List.length (List.hd m)) then
-                           (let fmatrix = create_matrix (List.length m)
-                           (List.length (List.hd m)) (SFloat f) in
-                             SMatrix(scalar_matrices times m fmatrix))
-                           else
-                             failwith "Not correct dimensions"
-  | SMatrix m, SFloat f   -> times (SFloat f, SMatrix m)
+  | SFloat _, SMatrix m   -> SMatrix (List.map (fun l -> List.map (fun x -> times (x,e1)) l) m)
+  | SMatrix m, SFloat _   -> times (e2, SMatrix m)
+  | SMatrix m1, SMatrix m2 -> SMatrix (dot_matrices m1 (trans_matrix m2))
   | STimes(c,l), SFloat a -> unbox(STimes (c*.a,l))
   | SFloat a, SFloat b    -> SFloat(a*.b)
   | SFloat a, e           -> unbox(match compare_mult e1 e2 with Some e -> e | None -> STimes (a,[e]))
@@ -209,60 +179,23 @@ let rec remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
 
-(* Matrix multiplication on Matrix m with nxm and Matrix n with pxq, m must = p*)
-let matrix_mult m n =
-  let x0 = List.length m in
-  let y0 = List.length n in
-  let x1 = (if x0 > 0 then List.length (List.hd m) else failwith "Not correct dimensions") in
-  if x1 <> y0 then failwith "Not correct dimensions"
-  else
-    let tn = trans_matrix n in
-    let rec helper mat tnat =
-    (match mat with
-    | [] -> []
-    | h::t -> let rec helper2 ma tna =
-              (match tna with
-                | [] -> []
-                | s::e -> s_plus(List.hd (scalar_matrices times [ma] [s]))::helper2 ma e)
-              in helper2 h (tnat)::helper t tnat) in helper m tn
 
 (* Removes the ith column and the first row in a matrix (for determinants)*)
 let remove m i =
     let newm = List.tl m in
     List.map (remove_at i) newm
 
-let prep_det m =
-  match m with
-  | [] -> []
-  | h::t -> let rec helper i n =
-            (match n with
-            | [] -> []
-            | s::e -> if i = 1 then times(s,SFloat(-1.))::helper (i-1) e
-              else s::helper (i+1) e) in
-              (helper 0 h)::t
 
 (* Returns the determinant of a matrix*)
-let determinant m =
-  let row = List.length m in
-  let _ = for i = 0 to (row-1) do
-            if (List.length (List.nth m i)) <> row
-              then failwith "Matrix not square"
-            else ()
-          done in
-  let rec helper hm =
-    let acc = ref [] in
-    (match hm with
+let rec determinant m =
+  let rec helper i = function
+    | [] -> SFloat 0.
+    | h::t when i mod 2 = 0-> plus(times (h, determinant (remove m i)),(helper (i+1) t))
+    | h::t -> plus(s_times [SFloat (-1.); h; determinant (remove m i)],(helper (i+1) t)) in
+  match m with
     | [] -> SFloat 1.
-    | h::t -> if List.length h = 2 then
-                plus (times(List.hd h, List.nth (List.hd t) 1),times(times(List.hd (List.hd t), List.hd(List.tl h)),SFloat(-1.)))
-              else
-                let newh = List.hd (prep_det hm) in
-                let () = (for i = 0 to (List.length newh) - 1 do
-                  acc := times((List.nth newh i),helper (remove hm i))::!acc
-                done) in List.fold_left (fun accum x -> plus(accum,x)) (SFloat 0.) !acc
-                  )
-    in helper m
-    
+    | h::t -> helper 0 h 
+
 (*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
 
 (*NOTE: For future, use the functions s_times, s_plus, and pow instead of STimes, SPlus, and SPow when constructing new
@@ -281,7 +214,7 @@ let rec deriv s1 s2 =
   | SPlus (h::t), SVar _  -> s_plus [deriv h s2; deriv (SPlus t) s2]
   | SPow (f, g), SVar _   -> times(pow(f,g),plus(times(deriv g s2, SLog(f)), 
                                s_times[g; (deriv f s2); pow(f, SFloat (-1.))]))
-  | SMatrix x, SVar _     -> failwith "Why would you take the derivative of a matrix??"
+  | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> deriv x s2) l) m)
   | SSin x, SVar _        -> s_times [SCos x; deriv x s2] 
   | SCos x, SVar _        ->  s_times [SFloat (-1.); SSin x; deriv x s2]
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
@@ -359,40 +292,30 @@ let bin_op op s1 s2 =
     | Integrate -> integrate s1 s2
 
 let un_op op s =
-    match op with
-    | Neg       -> times (SFloat (-1.), s)
-    | Sin       -> SSin s
-    | Cos       -> SCos s
-    | Log       -> SLog s
-    | Trans     -> (match s with
-                   | SMatrix m -> if check_dim m (List.length (List.hd m)) then
-                                    SMatrix(trans_matrix m)
-                                  else failwith "Not correct dimensions"
-                   | _ -> failwith "Can't take the transpose of non-matrices")
-    | Det       -> (match s with SMatrix m -> determinant m | _ ->
-                            failwith "Can't take the determinant of a non-matrix")
-    | Inv       -> failwith "TODO"
-    | EigVector -> failwith "TODO"
-    | EigValue  -> failwith "TODO"
-    | RRef      -> failwith "TODO"
+    match op, s with
+    | Neg, _       -> times (SFloat (-1.), s)
+    | Sin, _       -> SSin s
+    | Cos, _       -> SCos s
+    | Log, _       -> SLog s
+    | Trans, SMatrix m     -> SMatrix(trans_matrix m)
+    | Det, SMatrix m when is_square m -> determinant m 
+    | Det, SMatrix m       -> failwith "Err Square"
+    | Inv, SMatrix m       -> failwith "TODO"
+    | EigVector, SMatrix m -> failwith "TODO"
+    | EigValue, SMatrix m  -> failwith "TODO"
+    | RRef, SMatrix m      -> failwith "TODO"
+    | _, _      -> failwith "Err Gen"
 
 let rec eval = function
-    | Float  f            -> SFloat f
-    | Var    v            -> SVar v
-    | BinOp  (op, e1, e2) -> bin_op op (eval e1) (eval e2)
-    | UnOp   (op, e)      -> un_op op (eval e)
-    | Matrix m            -> let rec helper m =
-                             (match m with
-                             | [] -> []
-                             | h::t -> let rec helper1 m1 =
-                                       (match m1 with
-                                        | [] -> []
-                                        | s::e -> (eval s)::helper1 e) in 
-                                        helper1 h::helper t) in 
-                                        SMatrix(helper m)
+    | Float  f                -> SFloat f
+    | Var    v                -> SVar v
+    | BinOp  (op, e1, e2)     -> bin_op op (eval e1) (eval e2)
+    | UnOp   (op, e)          -> un_op op (eval e)
+    | Matrix m when is_rect m -> SMatrix (List.map (fun l -> List.map eval l) m)
+    | Matrix m                -> failwith "Improper matrix"
     | Subst  (Float f,Var v,e)      -> subst (v,f) (eval e)
     | Subst (Var v, Float f, e)     -> subst (v,f) (eval e)
-    | Subst (_)           -> failwith "Cannot substitute that"
-    | E                   -> SE
-    | PI                  -> SPI
+    | Subst (_)               -> failwith "Cannot substitute that"
+    | E                       -> SE
+    | PI                      -> SPI
 
