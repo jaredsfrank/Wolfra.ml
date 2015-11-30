@@ -342,7 +342,15 @@ let rec subst ((k,v): string * float ) e =
   | SPlus [] -> SFloat 0.
   | SPlus (h::t) -> plus(subst (k,v) h, subst (k,v) (SPlus t))
   | SPow (e1,e2) -> pow (subst (k,v) e1, subst  (k,v) e2)
-  | SMatrix _ -> failwith "TODO"
+  | SMatrix m -> let rec helper m =
+                             (match m with
+                             | [] -> []
+                             | h::t -> let rec helper1 m1 =
+                                       (match m1 with
+                                        | [] -> []
+                                        | s::e -> (subst (k,v) s)::helper1 e) in
+                                        helper1 h::helper t) in
+                                        SMatrix(helper m)
   | SSin x -> SSin (subst (k,v) x)
   | SCos x -> SCos (subst (k,v) x)
   | SLog x -> SLog (subst (k,v) x)
