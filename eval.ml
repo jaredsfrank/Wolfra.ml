@@ -206,7 +206,7 @@ and times (e1,e2) =
 and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
 and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
-and rec remove_at n = function
+and remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
 
