@@ -311,12 +311,20 @@ and integrate s1 s2 =
  | SPow (f, g), SVar _   -> failwith "TODO"
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar x'        -> (match x with 
-                            | SVar v when v = x'-> times(SFloat (-1.), SCos x)
+                            | SFloat f -> times(SSin x, SVar x')
+                            | SVar v when v = x'-> SCos x
+                            | SVar v when v <> x'-> times(SSin x, SVar x')
                             | _ -> failwith "TODO")
  | SCos x, SVar x'        -> (match x with 
-                            | SVar v when v = x' -> (SSin x)
+                            | SFloat f -> times(SCos x, SVar x')
+                            | SVar v when v = x' -> times(SFloat (-1.), SSin x)
+                            | SVar v when v <> x' -> times(SCos x, SVar x')
                             | _ -> failwith "TODO")
- | SLog x, SVar _        -> failwith "TODO" 
+ | SLog x, SVar x'       -> (match x with 
+                            | SFloat f -> times(SLog x, SVar x')
+                            | SVar v when v = x' -> plus(times(x, SLog x), times(SFloat (-1.), x))
+                            | SVar v when v <> x' -> times(SLog x, SVar x')
+                            | _ -> failwith "TODO")
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
  | _, _                  -> failwith "This shouldn't happen"
