@@ -1,4 +1,4 @@
-open Eval
+open Simplify
 (*Returns the string interpretation of performing one arithmetic step*)
 val step_string : s_expr -> string
 

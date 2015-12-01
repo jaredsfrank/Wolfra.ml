@@ -1,19 +1,5 @@
 open Ast
-
-
-type s_expr = 
-    | SFloat of float
-    | SVar of var
-    | STimes of float* s_expr list
-    | SPlus of s_expr list
-    | SPow of s_expr * s_expr
-    | SMatrix of s_expr list list
-    | SSin of s_expr
-    | SCos of s_expr
-    | STan of s_expr
-    | SLog of s_expr
-    | SE
-    | SPI
+open Simplify
 
 (* [subst ("c", 5) e] substitutes the value 5 for every instance
  *  of the Var or Const c *)
