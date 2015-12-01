@@ -235,8 +235,8 @@ let rec deriv s1 s2 =
 let is_constant s = true (*JUST A PLACEHOLDER. STILL NEEDS TO BE DONE*)
 
 let rec by_parts u dv s2 =
-                        let du = deriv u s2 in let v = integrate dv s2 in
-                        plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)
+    let du = deriv u s2 in let v = integrate dv s2 in
+    plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)
 
 and integrate s1 s2 = 
  match s1, s2 with
@@ -252,6 +252,7 @@ and integrate s1 s2 =
  | SPow (SVar x, SFloat (-1.)), SVar x' when x = x' -> SLog(SVar x)
  | SPow (SVar x, g), SVar x' when x = x' && is_constant g ->  times(pow(SVar x, plus(SFloat 1., g)),pow(plus(SFloat 1., g), SFloat (-1.)))
  | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
+ | SPow (SE, STimes(c,[SVar x])), SVar x' when x = x' ->times(SFloat (1./.c), SPow(SE, STimes(c,[SVar x])))
  | SPow (SVar f, SFloat g), SVar x' when f = x' -> times(pow(plus(SFloat g, SFloat 1.), SFloat (-1.)),pow(SVar f,plus(SFloat g, SFloat 1.)))
  | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
  | SMatrix x, SVar _     -> failwith "TODO"
