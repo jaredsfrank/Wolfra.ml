@@ -23,6 +23,7 @@ type s_expr =
     | SMatrix of s_expr list list
     | SSin of s_expr
     | SCos of s_expr
+    | STan of s_expr 
     | SLog of s_expr
     | SE
     | SPI
@@ -228,6 +229,8 @@ let rec deriv s1 s2 =
   | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> deriv x s2) l) m)
   | SSin x, SVar _        -> s_times [SCos x; deriv x s2] 
   | SCos x, SVar _        ->  s_times [SFloat (-1.); SSin x; deriv x s2]
+  | STan x, SVar _        -> s_times [ pow(SCos x, SFloat (-2.)); deriv x s2]
+
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"
 
@@ -299,6 +302,7 @@ let rec subst ((k,v): string * float ) e =
   | SMatrix m -> SMatrix (List.map (fun l -> List.map (subst (k,v)) l) m)
   | SSin x -> SSin (subst (k,v) x)
   | SCos x -> SCos (subst (k,v) x)
+  | STan x -> STan (subst (k,v) x)
   | SLog x -> SLog (subst (k,v) x)
   | SE -> SE
   | SPI -> SPI
@@ -384,6 +388,7 @@ let un_op op s =
     | Neg, _       -> times (SFloat (-1.), s)
     | Sin, _       -> SSin s
     | Cos, _       -> SCos s
+    | Tan, _       -> STan s
     | Log, _       -> SLog s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m 
