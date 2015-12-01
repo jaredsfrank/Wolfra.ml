@@ -10,7 +10,7 @@ type binop =
 
 (*unary operations*)
 type unop = 
-    | Neg | Sin | Cos | Log
+    | Neg | Sin | Cos | Tan | Log
     | Trans | Det | Inv | EigVector | EigValue | RRef 
 
 (*Type of mathematical expressions
