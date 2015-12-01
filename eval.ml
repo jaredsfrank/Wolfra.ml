@@ -242,7 +242,11 @@ and integrate s1 s2 =
  | SPow (SVar x, SFloat (-1.)), SVar x' when x = x' -> SLog(SVar x)
  | SPow (SVar x, g), SVar x' when x = x' && is_constant g ->  times(pow(SVar x, plus(SFloat 1., g)),pow(plus(SFloat 1., g), SFloat (-1.)))
  | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
- | SPow (f, g), SVar _   -> failwith "TODO"
+ | SPow (f, g), SVar x'   -> (match f,g with
+                            | SVar v, SFloat t when v = x' ->
+                              times(pow(plus(SFloat t, SFloat 1.), SFloat (-1.)),
+                              pow(SVar v,plus(SFloat t, SFloat 1.)))
+                            | _ -> failwith "TODO")
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar x'        -> (match x with 
                             | SFloat f -> times(SSin x, SVar x')
