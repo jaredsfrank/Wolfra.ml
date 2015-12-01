@@ -48,10 +48,11 @@ let parse_error _ =
 %token RREF
 %token INV
 %token EOF
+%token TAN
 
 %left SUBST FOR IN
 %left PLUS MINUS
-%left MULT DIV COS SIN LOG DERIV DERIVE DERIV2 DERIVE2
+%left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2
 %left TRANS DET INV EV EVAL RREF
 %right POW DECIMAL
 %nonassoc VAR LBRACE FLOAT LPAREN PI E  COMMA SEMI LBRACKET
@@ -102,6 +103,7 @@ expr:
   | EV expr {UnOp (EigVector, $2)}
   | EVAL expr {UnOp (EigValue, $2)}
   | RREF expr {UnOp (RRef, $2)}
+  | TAN LPAREN expr RPAREN  {UnOp(Tan, $3)}
 ;
 
 

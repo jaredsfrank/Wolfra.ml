@@ -23,6 +23,7 @@ type s_expr =
     | SMatrix of s_expr list list
     | SSin of s_expr
     | SCos of s_expr
+    | STan of s_expr 
     | SLog of s_expr
     | SE
     | SPI
@@ -228,6 +229,8 @@ let rec deriv s1 s2 =
   | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> deriv x s2) l) m)
   | SSin x, SVar _        -> s_times [SCos x; deriv x s2] 
   | SCos x, SVar _        ->  s_times [SFloat (-1.); SSin x; deriv x s2]
+  | STan x, SVar _        -> s_times [ pow(SCos x, SFloat (-2.)); deriv x s2]
+
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"
 
@@ -255,6 +258,7 @@ and integrate s1 s2 =
  | SPow (SE, STimes(c,[SVar x])), SVar x' when x = x' ->times(SFloat (1./.c), SPow(SE, STimes(c,[SVar x])))
  | SPow (SVar f, SFloat g), SVar x' when f = x' -> times(pow(plus(SFloat g, SFloat 1.), SFloat (-1.)),pow(SVar f,plus(SFloat g, SFloat 1.)))
  | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
+ | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> times(pow(SFloat c1, SFloat (-1.)), SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )))
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar x'        -> (match x with 
                             | SFloat f -> times(SSin x, SVar x')
@@ -271,6 +275,14 @@ and integrate s1 s2 =
                             | SVar v when v <> x' -> times(SCos x, SVar x')
                             | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), SSin(x))
                             | STimes(f, [SVar v]) when v<>x' -> times(SCos x, SVar x')                            
+                            | _ -> failwith "TODO")
+ | STan x, SVar x'       -> (match x with
+                            | SFloat f -> times(STan x, SVar x')
+                            | SPI | SE -> times(STan x, SVar x')
+                            | SVar v when v = x' -> times(SFloat (-1.), SLog (SCos (SVar v)))
+                            | SVar v when v <> x' -> times(STan x, SVar x')
+                            | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), times(SFloat (-1.), SLog (SCos x)))
+                            | STimes(f, [SVar v]) when v<>x' -> times(STan x, SVar x')
                             | _ -> failwith "TODO")
  | SLog x, SVar x'       -> (match x with 
                             | SFloat f -> times(SLog x, SVar x')
@@ -299,6 +311,7 @@ let rec subst ((k,v): string * float ) e =
   | SMatrix m -> SMatrix (List.map (fun l -> List.map (subst (k,v)) l) m)
   | SSin x -> SSin (subst (k,v) x)
   | SCos x -> SCos (subst (k,v) x)
+  | STan x -> STan (subst (k,v) x)
   | SLog x -> SLog (subst (k,v) x)
   | SE -> SE
   | SPI -> SPI
@@ -384,6 +397,7 @@ let un_op op s =
     | Neg, _       -> times (SFloat (-1.), s)
     | Sin, _       -> SSin s
     | Cos, _       -> SCos s
+    | Tan, _       -> STan s
     | Log, _       -> SLog s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m 
