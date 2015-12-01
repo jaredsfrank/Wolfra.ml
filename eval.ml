@@ -273,6 +273,7 @@ and integrate s1 s2 =
                             | _ -> failwith "TODO")
  | SLog x, SVar x'       -> (match x with 
                             | SFloat f -> times(SLog x, SVar x')
+                            | SPI -> times(SLog x, SVar x')
                             | SVar v when v = x' -> plus(times(x, SLog x), times(SFloat (-1.), x))
                             | SVar v when v <> x' -> times(SLog x, SVar x')
                             | STimes(f, [SVar v]) when v=x' -> plus(times(SVar x', SLog x), times(SFloat (-1.), SVar x'))
