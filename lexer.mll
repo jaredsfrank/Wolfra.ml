@@ -54,4 +54,5 @@ rule token = parse
   | letters as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }
+  | "tan" { TAN } 
 
