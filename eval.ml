@@ -280,6 +280,8 @@ and integrate s1 s2 =
                             | SPI | SE -> times(STan x, SVar x')
                             | SVar v when v = x' -> times(SFloat (-1.), SLog (SCos (SVar v)))
                             | SVar v when v <> x' -> times(STan x, SVar x')
+                            | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), times(SFloat (-1.), SLog (SCos x)))
+                            | STimes(f, [SVar v]) when v<>x' -> times(STan x, SVar x')
                             | _ -> failwith "TODO")
  | SLog x, SVar x'       -> (match x with 
                             | SFloat f -> times(SLog x, SVar x')
