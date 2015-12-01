@@ -21,7 +21,5 @@ let rec deriv s1 s2 =
   | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> deriv x s2) l) m)
   | SSin x, SVar _        -> s_times [SCos x; deriv x s2] 
   | SCos x, SVar _        ->  s_times [SFloat (-1.); SSin x; deriv x s2]
-  | STan x, SVar _        -> s_times [ pow(SCos x, SFloat (-2.)); deriv x s2]
-
   | SLog x, SVar _        ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                  -> failwith "This shouldn't happen"

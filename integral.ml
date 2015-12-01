@@ -3,7 +3,6 @@ open Derivative
 
 let is_constant s = true (*JUST A PLACEHOLDER. STILL NEEDS TO BE DONE*)
 
-
 let rec integrate s1 s2 = 
  match s1, s2 with
  | SFloat f, SVar x -> times(SFloat f, s2)
@@ -38,14 +37,6 @@ let rec integrate s1 s2 =
                             | SVar v when v <> x' -> times(SCos x, SVar x')
                             | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), SSin(x))
                             | STimes(f, [SVar v]) when v<>x' -> times(SCos x, SVar x')                            
-                            | _ -> failwith "TODO")
- | STan x, SVar x'       -> (match x with
-                            | SFloat f -> times(STan x, SVar x')
-                            | SPI | SE -> times(STan x, SVar x')
-                            | SVar v when v = x' -> times(SFloat (-1.), SLog (SCos (SVar v)))
-                            | SVar v when v <> x' -> times(STan x, SVar x')
-                            | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), times(SFloat (-1.), SLog (SCos x)))
-                            | STimes(f, [SVar v]) when v<>x' -> times(STan x, SVar x')
                             | _ -> failwith "TODO")
  | SLog x, SVar x'       -> (match x with 
                             | SFloat f -> times(SLog x, SVar x')

@@ -23,7 +23,6 @@ type s_expr =
     | SMatrix of s_expr list list
     | SSin of s_expr
     | SCos of s_expr
-    | STan of s_expr 
     | SLog of s_expr
     | SE
     | SPI
@@ -108,6 +107,7 @@ and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
     match l, exp with
     | [], _ -> [exp]  
     | h::t, _ -> (match compare_mult exp h with
+                | Some (SFloat 1.) -> t
                 | Some e -> e::t
                 | None -> h::(times_help t exp)
                 )

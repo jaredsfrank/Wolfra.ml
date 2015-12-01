@@ -33,11 +33,9 @@ let rec identity n m matrix =
   | h::t -> (helper h 0 m)::(identity n (m+1) t)
   
 
-
 let rec remove_at n = function
   | [] -> []
   | h::t -> if n = 0 then t else h::remove_at (n-1) t
-
 
 
 (* Removes the ith column and the first row in a matrix (for determinants)*)

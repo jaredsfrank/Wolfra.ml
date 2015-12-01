@@ -28,6 +28,7 @@ rule token = parse
   | "/" { DIV }
   | "cos" { COS }
   | "sin" { SIN }
+  | "tan" { TAN }
   | "log" { LOG }
   | "derive" { DERIVE }
   | "d(" { DERIVE2 }
@@ -54,5 +55,3 @@ rule token = parse
   | letters as id { VAR id }
   | integral as i {FLOAT i}
   | eof { EOF }
-  | "tan" { TAN } 
-

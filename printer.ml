@@ -1,5 +1,4 @@
 open Simplify
-let rec step_string _ = failwith "TODO"
 (*This code is inspired by the printer from A4 OCalf*)
 
 let string_of_floats f =
@@ -42,7 +41,6 @@ let rec format_expr f e =
     | SMatrix (h::t) -> Format.fprintf f "[%a;%a]" print_list h print_list_list t
     | SSin s ->  Format.fprintf f "sin(%a)" (bracket e) s
     | SCos s ->  Format.fprintf f "cos(%a)" (bracket e) s
-    | STan s ->  Format.fprintf f "tan(%a)" (bracket e) s
     | SLog s ->  Format.fprintf f "ln(%a)" (bracket e) s
     | SE -> Format.fprintf f "e"
     | SPI  -> Format.fprintf f "pi"

@@ -17,6 +17,7 @@ let parse_error _ =
 
 
 %token POW
+%token TAN
 %token MULT
 %token COS
 %token PI
@@ -48,7 +49,6 @@ let parse_error _ =
 %token RREF
 %token INV
 %token EOF
-%token TAN
 
 %left SUBST FOR IN
 %left PLUS MINUS

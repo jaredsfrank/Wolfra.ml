@@ -18,7 +18,6 @@ let rec subst ((k,v): string * float ) e =
   | SMatrix m -> SMatrix (List.map (fun l -> List.map (subst (k,v)) l) m)
   | SSin x -> SSin (subst (k,v) x)
   | SCos x -> SCos (subst (k,v) x)
-  | STan x -> STan (subst (k,v) x)
   | SLog x -> SLog (subst (k,v) x)
   | SE -> SE
   | SPI -> SPI
@@ -49,7 +48,7 @@ let un_op op s =
     | Neg, _       -> times (SFloat (-1.), s)
     | Sin, _       -> SSin s
     | Cos, _       -> SCos s
-    | Tan, _       -> STan s
+    | Tan, _       -> times(SSin s, pow(SCos s, SFloat (-1.)))
     | Log, _       -> SLog s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m 
