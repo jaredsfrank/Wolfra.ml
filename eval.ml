@@ -244,8 +244,9 @@ and integrate s1 s2 =
  | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
  | SPow (f, g), SVar x'   -> (match f,g with
                             | SVar v, SFloat t when v = x' ->
-                              times(pow(plus(SFloat t, SFloat 1.), SFloat (-1.)),
-                              pow(SVar v,plus(SFloat t, SFloat 1.)))
+                               times(pow(plus(SFloat t, SFloat 1.), SFloat (-1.)),
+                               pow(SVar v,plus(SFloat t, SFloat 1.)))
+                            | SVar v, SFloat t when v <> x' -> times(SPow (SVar v, SFloat t), SVar x')
                             | _ -> failwith "TODO")
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar x'        -> (match x with 
