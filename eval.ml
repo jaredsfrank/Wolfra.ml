@@ -258,6 +258,7 @@ and integrate s1 s2 =
  | SPow (SE, STimes(c,[SVar x])), SVar x' when x = x' ->times(SFloat (1./.c), SPow(SE, STimes(c,[SVar x])))
  | SPow (SVar f, SFloat g), SVar x' when f = x' -> times(pow(plus(SFloat g, SFloat 1.), SFloat (-1.)),pow(SVar f,plus(SFloat g, SFloat 1.)))
  | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
+ | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> times(pow(SFloat c1, SFloat (-1.)), SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )))
  | SMatrix x, SVar _     -> failwith "TODO"
  | SSin x, SVar x'        -> (match x with 
                             | SFloat f -> times(SSin x, SVar x')
