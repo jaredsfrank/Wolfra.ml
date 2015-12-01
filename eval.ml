@@ -345,6 +345,22 @@ let rref m =
     done in !n
   with Exit -> !n
 
+(*Derives the inverse of a matrix from matrix m*)
+let inv_matrix m =
+    let rows = (List.length m) in
+    let ident = identity rows 0 (create_matrix rows rows (SFloat 0.)) in
+    let rec helper1 m n =
+    (match m, n with
+    | [], [] -> []
+    | h1::t1, h2::t2 -> (h1@h2)::helper1 t1 t2
+    | _, _ -> failwith "Err Square") in
+    let reduced = rref(helper1 m ident) in
+    let rec helper2 red n =
+    (match red with
+    | [] -> []
+    | h::t -> if n >= rows then red else helper2 t (n+1)) in
+    List.map (fun x -> helper2 x 0) reduced
+
 let un_op op s =
     match op, s with
     | Neg, _       -> times (SFloat (-1.), s)
@@ -355,10 +371,7 @@ let un_op op s =
     | Det, SMatrix m when is_square m -> determinant m 
     | Det, SMatrix m       -> failwith "Err Square"
     | Inv, SMatrix m when determinant m = SFloat 0. -> failwith "Determinant = 0"
-    | Inv, SMatrix [[h1;h2];[h3;h4]]  ->  let d = determinant [[h1;h2];[h3;h4]] in
-                                          times(pow(d ,SFloat (-1.)),
-                                          SMatrix([[h4; times(h2, SFloat (-1.))];
-                                          [times(h3 ,SFloat (-1.));h1]]))
+    | Inv, SMatrix m  ->  SMatrix(inv_matrix m)
     | EigVector, SMatrix m -> failwith "TODO"
     | EigValue, SMatrix m  -> failwith "TODO"
     | RRef, SMatrix m      -> SMatrix(rref m)
