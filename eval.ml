@@ -249,6 +249,8 @@ and integrate s1 s2 =
                             | SFloat f -> times(SSin x, SVar x')
                             | SVar v when v = x'-> SCos x
                             | SVar v when v <> x'-> times(SSin x, SVar x')
+                            | STimes(f, [SVar v]) when v=x' -> times(pow(times(SFloat (-1.), SFloat f), SFloat (-1.)), SCos(x))
+                            | STimes(f, [SVar v]) when v<>x' -> times(SSin x, SVar x')
                             | _ -> failwith "TODO")
  | SCos x, SVar x'        -> (match x with 
                             | SFloat f -> times(SCos x, SVar x')
