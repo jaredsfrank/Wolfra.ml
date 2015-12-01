@@ -259,6 +259,8 @@ and integrate s1 s2 =
                             | SFloat f -> times(SLog x, SVar x')
                             | SVar v when v = x' -> plus(times(x, SLog x), times(SFloat (-1.), x))
                             | SVar v when v <> x' -> times(SLog x, SVar x')
+                            | STimes(f, [SVar v]) when v=x' -> plus(times(SVar x', SLog x), times(SFloat (-1.), SVar x'))
+                            | STimes(f, [SVar v]) when v<>x' -> times(SLog x, SVar x')
                             | _ -> failwith "TODO")
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
