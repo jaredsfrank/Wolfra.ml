@@ -292,6 +292,56 @@ let bin_op op s1 s2 =
     | Deriv  -> deriv s1 s2
     | Integrate -> integrate s1 s2
 
+(*Swaps rows i and j of a matrix. if i=j then the matrix stays the same*)
+let swap_rows m i j =
+  let ne = ref [] in
+  let _ = for c = 0 to ((List.length m)-1) do
+    if c = (i) then ne:=!ne@[List.nth m j]
+    else
+      if c = (j) then ne:=!ne@[List.nth m i]
+      else
+        ne:=!ne@[List.nth m c]
+  done in !ne
+
+(*Returns the row-reduced echelon form of a matrix, derived from the array
+ * solution on http://rosettacode.org/wiki/Reduced_row_echelon_form#OCaml*)
+let rref m =
+  let n = ref m in
+  try
+    let lead = ref 0
+    and rows = List.length !n
+    and cols = List.length (List.hd !n) in
+    let _ = for r = 0 to pred rows do
+      if cols <= !lead then
+        raise Exit;
+      let i = ref r in
+      while (List.nth (List.nth !n !i) !lead) = (SFloat 0.) do
+        let _ = incr i in
+        if rows = !i then begin
+          i := r;
+          incr lead;
+          if cols = !lead then
+            raise Exit;
+          end
+      done;
+      n:=swap_rows !n !i r;
+      let lv = (List.nth (List.nth !n r) !lead) in
+      let mr = List.map (fun v -> times(v, pow(lv,SFloat (-1.)))) (List.nth !n r) in
+      n:=[mr]@(!n);
+      n:= swap_rows !n 0 (r+1);
+      n:= List.tl !n;
+      for i = 0 to pred rows do
+        if i <> r then
+          let lv = (List.nth (List.nth !n i) !lead) in
+          let mi = List.mapi (fun i iv -> plus(iv,times(times(lv,SFloat (-1.)),(List.nth (List.nth !n r) i)))) (List.nth !n i) in
+          n:= [mi]@(!n);
+          n:= swap_rows !n 0 (i+1);
+          n:= List.tl !n;
+      done;
+      incr lead;
+    done in !n
+  with Exit -> !n
+
 let un_op op s =
     match op, s with
     | Neg, _       -> times (SFloat (-1.), s)
@@ -308,7 +358,7 @@ let un_op op s =
                                           [times(h3 ,SFloat (-1.));h1]]))
     | EigVector, SMatrix m -> failwith "TODO"
     | EigValue, SMatrix m  -> failwith "TODO"
-    | RRef, SMatrix m      -> failwith "TODO"
+    | RRef, SMatrix m      -> SMatrix(rref m)
     | _, _      -> failwith "Err Gen"
 
 
