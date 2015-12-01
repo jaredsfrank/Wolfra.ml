@@ -10,6 +10,7 @@ type s_expr =
     | SMatrix of s_expr list list
     | SSin of s_expr
     | SCos of s_expr
+    | STan of s_expr
     | SLog of s_expr
     | SE
     | SPI
