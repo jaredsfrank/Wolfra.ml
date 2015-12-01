@@ -2,6 +2,10 @@ open Eval
 let rec step_string _ = failwith "TODO"
 (*This code is inspired by the printer from A4 OCalf*)
 
+let string_of_floats f =
+    let s = string_of_float f in
+    if String.get s ((String.length s)-1) = '.' then String.sub s 0 ((String.length s)-1)
+    else s
 
 let rec format_expr f e = 
     let bracket parent f e =
@@ -18,14 +22,14 @@ let rec format_expr f e =
         | h::t -> Format.fprintf f "%a;%a" print_list h (print_list_list) t
     in
     match e with
-    | SFloat n -> Format.fprintf f "%.4f" n
+    | SFloat n -> Format.fprintf f "%s" (string_of_floats n)
     | SVar x -> Format.fprintf f "%s" x
-    | STimes (c,[]) -> Format.fprintf f "%.4f" c
+    | STimes (c,[]) -> Format.fprintf f "%s" (string_of_floats c)
     | STimes (1.,[h]) -> Format.fprintf f "%a" (bracket e) h
     | STimes (-1.,[h]) -> Format.fprintf f "-%a" (bracket e) h
-    | STimes (c,[h]) -> Format.fprintf f "%.4f%a" c (bracket e) h
+    | STimes (c,[h]) -> Format.fprintf f "%s%a" (string_of_floats c) (bracket e) h
     | STimes (1., h::t) -> Format.fprintf f "%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
-    | STimes (c, h::t) -> Format.fprintf f "%.4f%a*%a" c (bracket e) h (bracket e) (STimes (1.,t))
+    | STimes (c, h::t) -> Format.fprintf f "%s%a*%a" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,t))
     | SPlus [] -> Format.fprintf f ""
     | SPlus [h] -> Format.fprintf f "%a" (bracket e) h
     | SPlus (h1::h2::t) -> (match h2 with 
