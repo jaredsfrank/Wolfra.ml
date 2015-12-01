@@ -63,6 +63,16 @@ let create_matrix row col f =
     let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
     combine_rows row []
 
+(*Creates the identity matrix of size nxn, matrix should be an empty matrix*)
+let rec identity n m matrix =
+  let rec helper l n m =
+  (match l with
+  | [] -> []
+  | h::t -> if n = m then (SFloat 1.)::t else h::helper t (n+1) m) in
+  match matrix with
+  | [] -> []
+  | h::t -> (helper h 0 m)::(identity n (m+1) t)
+  
 (* Returns the transpose of a matrix*)
 let rec trans_matrix = function
   | [] -> []
