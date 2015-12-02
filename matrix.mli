@@ -19,7 +19,7 @@ val matrix_times: s_expr * s_expr -> s_expr
 (*[rref m] returns the reduced row echelon form of m*)
 val rref: s_expr list list -> s_expr list list
 
-(*[rref m] returns the inverse of m*)
+(*[inv_matrix m] returns the inverse of m*)
 val inv_matrix: s_expr list list -> s_expr list list
 
 (*[trans_matrix m] returns the transpose of m*)

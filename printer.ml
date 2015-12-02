@@ -23,7 +23,7 @@ let rec format_expr f e =
     match e with
     | SFloat n -> Format.fprintf f "%s" (string_of_floats n)
     | SVar x -> Format.fprintf f "%s" x
-    | STimes (c,[]) -> Format.fprintf f "%s" (string_of_floats c)
+    | STimes (c,[]) -> Format.fprintf f "{@<var>%s@}" (string_of_floats c)
     | STimes (1.,[h]) -> Format.fprintf f "%a" (bracket e) h
     | STimes (-1.,[h]) -> Format.fprintf f "-%a" (bracket e) h
     | STimes (c,[h]) -> Format.fprintf f "%s%a" (string_of_floats c) (bracket e) h
@@ -34,8 +34,8 @@ let rec format_expr f e =
     | SPlus (h1::h2::t) -> (match h2 with 
                               | SFloat x when x<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
                               | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
-                              | _ -> Format.fprintf f "@[<hov 1>%a@,+%a@]" (bracket e) h1 (bracket e) (SPlus( h2::t)))
-    | SPow (s1,s2) -> Format.fprintf f "@[(%a)^(%a)@]" (bracket e) s1 (bracket e) s2
+                              | _ -> Format.fprintf f "%a+%a" (bracket e) (SPlus( h2::t)) (bracket e) h1)
+    | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" (bracket e) s1 (bracket e) s2
     | SMatrix []  -> Format.fprintf f ""
     | SMatrix [h] -> Format.fprintf f "[%a]" print_list h
     | SMatrix (h::t) -> Format.fprintf f "[%a;%a]" print_list h print_list_list t
@@ -44,5 +44,30 @@ let rec format_expr f e =
     | SLog s ->  Format.fprintf f "ln(%a)" (bracket e) s
     | SE -> Format.fprintf f "e"
     | SPI  -> Format.fprintf f "pi"
+
+
+
+let set_color = function
+  | "var" -> "\027[38;5;33m"  (* blue   *)
+  | _         -> "\027[38;5;124m" (* red    *)
+
+let clear_color _ = "\027[38;5;15m"
+
+let print_tags = {
+  Format.mark_open_tag   = set_color;
+  Format.mark_close_tag  = clear_color;
+  Format.print_open_tag  = ignore;
+  Format.print_close_tag = ignore;
+}
+
+let make_printer formatter e =
+  Format.set_margin 80;
+  Format.set_formatter_tag_functions print_tags;
+  Format.set_tags true;
+  Format.printf "@<0>%s" (clear_color ());
+  Format.printf "%a@." formatter e
+
+let print_expr     = make_printer format_expr
+
 let make_string_of f = Format.asprintf "%a" f
 let string_of_expr     = make_string_of format_expr
