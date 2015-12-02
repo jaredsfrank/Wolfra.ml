@@ -22,8 +22,8 @@ val rref: s_expr list list -> s_expr list list
 (*[rref m] returns the inverse of m*)
 val inv_matrix: s_expr list list -> s_expr list list
 
-(*[rref m] returns the transpose of m*)
+(*[trans_matrix m] returns the transpose of m*)
 val trans_matrix: s_expr list list -> s_expr list list
 
-(*[rref m] returns the determinant of m*)
+(*[determinant m] returns the determinant of m*)
 val determinant: s_expr list list -> s_expr
