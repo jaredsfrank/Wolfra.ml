@@ -1,5 +1,5 @@
 open Simplify
-(*This code is inspired by the printer from A4 OCalf*)
+(*This code is heavily inspired by the printer from A4 OCalf*)
 
 let string_of_floats f =
     let s = string_of_float f in
@@ -27,6 +27,8 @@ let rec format_expr f e =
     | STimes (1.,[h]) -> Format.fprintf f "@{<misc>%a@}" (bracket e) h
     | STimes (-1.,[h]) -> Format.fprintf f "@{<misc>-%a@}" (bracket e) h
     | STimes (c,[h]) -> Format.fprintf f "@{<misc>%s%a@}" (string_of_floats c) (bracket e) h
+    | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "@{<misc>%a/(%a)@}" (bracket e) h (bracket e) (STimes (1.,e::t))
+    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "@{<misc>%s%a/(%a)@}" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,e::t))
     | STimes (1., h::t) -> Format.fprintf f "@{<misc>%a*%a@}" (bracket e) h (bracket e) (STimes (1.,t))
     | STimes (c, h::t) -> Format.fprintf f "@{<misc>%s%a*%a@}" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,t))
     | SPlus [] -> Format.fprintf f "@{<misc>"
@@ -35,6 +37,7 @@ let rec format_expr f e =
                               | SFloat x when x<0. -> Format.fprintf f "@{<misc>%a-%a@}" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
                               | STimes (c,x) when c<0. -> Format.fprintf f "@{<misc>%a-%a@}" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
                               | _ -> Format.fprintf f "@{<misc>%a+%a@}" (bracket e) (SPlus( h2::t)) (bracket e) h1)
+    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "@{<misc>1/(%a)@}" (bracket e) s1
     | SPow (s1,s2) -> Format.fprintf f "@{<misc>(%a)^(%a)@}" (bracket e) s1 (bracket e) s2
     | SMatrix []  -> Format.fprintf f "@{<misc>"
     | SMatrix [h] -> Format.fprintf f "@{<misc>[%a]@}" print_list h
@@ -50,8 +53,8 @@ let rec format_expr f e =
 let clear_color _ = "\027[38;5;5m\027[0m"
 
 let set_color = function
-  | "misc"  -> "\027[38;5;15m"  (* blue   *)
-  |  "var"  -> "\027[38;5;15m" (* red    *)
+  | "misc"  -> "\027[38;5;5m\027[0m"  (* blue   *)
+  |  "var"  -> "\027[38;5;5m\027[0m"(* red    *)
   |   _     -> "\027[38;5;5m\027[0m"
 
 
