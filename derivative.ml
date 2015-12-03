@@ -1,10 +1,5 @@
 open Simplify
 
-(*[deriv s1 s2] returns the derivative of s1 with respect to s2*)
-
-(*NOTE: For future, use the functions s_times, s_plus, and pow instead of STimes, SPlus, and SPow when constructing new
-lists of expressions. pow can directly replace SPow. s_times can directly replace STimes, and s_plus can directly replace SPlus
-*)
 
 let rec deriv s1 s2 =
   match s1, s2 with
@@ -24,3 +19,17 @@ let rec deriv s1 s2 =
   | SCos x, SVar _          ->  s_times [SFloat (-1.); SSin x; deriv x s2]
   | SLog x, SVar _          ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
   | _, _                    -> failwith "This shouldn't happen"
+
+let rec multi_deriv n s1 s2 =
+  match n with
+  | 0. -> s1
+  | n -> multi_deriv (n-.1.) (deriv s1 s2) s2
+
+let rec fact = function
+  | 0. -> 1.
+  | n -> n *. fact (n-.1.)
+
+let rec taylor n s1 s2 = 
+  match n with
+  | 0. -> SFloat 0.
+  | n -> plus(s_times[multi_deriv n s1 s2;pow(plus(s2, times(SFloat (-1.), SVar "a")),SFloat n); SFloat (1./.fact n)], taylor (n-.1.) s1 s2)

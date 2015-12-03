@@ -49,6 +49,7 @@ rule token = parse
   | "in"       {IN}
   | "["    { LBRACKET }
   | "]"    { RBRACKET }
+  | "taylor"     {TAYLOR}
   | "transpose"  {TRANS}
   | "det"      { DET }
   | "inverse"     { INV }

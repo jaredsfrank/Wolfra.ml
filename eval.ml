@@ -79,6 +79,7 @@ let rec eval = function
     | Subst  (Float f,Var v,e)      -> subst (v,f) (eval e)
     | Subst (Var v, Float f, e)     -> subst (v,f) (eval e)
     | Subst (_)               -> failwith "Cannot substitute that"
+    | Taylor (f, e1, e2)      -> taylor f (eval e2) (eval e1)
     | E                       -> SE
     | PI                      -> SPI
     | Ans                     -> !prev

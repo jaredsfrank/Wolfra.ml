@@ -29,6 +29,7 @@ type expr =
   | UnOp     of unop * expr
   | Matrix   of expr list list
   | Subst    of expr * expr * expr
+  | Taylor   of float * expr * expr
   | PI
   | E
   | Ans
