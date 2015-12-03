@@ -144,3 +144,23 @@ let inv_matrix m =
     | [] -> []
     | h::t -> if n >= rows then red else helper2 t (n+1)) in
     List.map (fun x -> helper2 x 0) reduced
+    
+let quadratic a b c =
+  let discrim = plus(pow(b,SFloat 2.),times(SFloat (-1.),times(SFloat 4.,times(a,c)))) in
+  match discrim with
+  | SFloat i -> if i < 0. then failwith "No complex solutions"
+                else (times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),pow(discrim,SFloat (0.5)))) ,
+                      times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),times(SFloat (-1.),pow(discrim,SFloat (0.5))))))
+  | _ -> failwith "This should not happen"
+
+let eigenv m =
+    let newm = [[plus(List.hd (List.hd m),times(SVar "lambda",SFloat (-1.)));
+                 List.nth (List.hd m) 1];
+                [List.hd (List.nth m 1);
+                 plus(List.nth (List.nth m 1) 1,times(SVar "lambda",SFloat (-1.)))]] in
+    let det = determinant newm in
+    (match det with
+    |  SPlus p -> let b = (match List.hd p with STimes (q,p) -> SFloat q | _ -> failwith "Nope") in
+                  let c = List.nth p 2 in
+                  quadratic (SFloat 1.) b c
+    | _ -> failwith "This shouldn't happen")
