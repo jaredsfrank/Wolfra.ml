@@ -4,6 +4,7 @@ open Matrix
 open Derivative
 open Integral
 
+let prev = ref (SFloat 42.)
 
 let rec subst ((k,v): string * float ) e =
   match e with
@@ -76,4 +77,4 @@ let rec eval = function
     | Subst (_)               -> failwith "Cannot substitute that"
     | E                       -> SE
     | PI                      -> SPI
-
+    | Ans                     -> !prev
