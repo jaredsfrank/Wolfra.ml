@@ -20,7 +20,7 @@ let rec main () =
     | Failure "No complex solutions" -> Printf.printf "Complex solutions are not supported\n\n"; main ()
     | _  -> Printf.printf "Please enter in a proper expression\n\n"; main()
 
-let () = main ()
+let () = let _ = Sys.command "clear" in main ()
 
 
 
