@@ -16,6 +16,7 @@ let rec main () =
     | Stack_overflow -> Printf.printf "Wolfra.ml does not support that type of integration!\n\n"; main ()
     | Failure "Err Matrix Mult" -> Printf.printf "These matrices do not multiply\n\n"; main ()
     | Failure "Err Square" -> Printf.printf "The matrix must be square\n\n"; main ()
+    | Failure "No complex solutions" -> Printf.printf "Complex solutions are not supported\n\n"; main ()
     | _  -> Printf.printf "Please enter in a proper expression\n\n"; main()
 
 let () = main ()
