@@ -4,3 +4,7 @@ open Simplify
 val string_of_expr     : s_expr     -> string
 
 val print_expr : s_expr -> unit
+
+val print: string -> unit
+
+val print_intro: unit -> unit
