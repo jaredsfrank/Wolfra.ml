@@ -56,7 +56,7 @@ let un_op op s =
     | Inv, SMatrix m when determinant m = SFloat 0. -> failwith "Determinant = 0"
     | Inv, SMatrix m  ->  SMatrix(inv_matrix m)
     | EigVector, SMatrix m -> failwith "TODO"
-    | EigValue, SMatrix m  -> failwith "TODO"
+    | EigValue, SMatrix m  -> SMatrix[[SVar "lambda"];[fst (eigenv m); snd (eigenv m)]]
     | RRef, SMatrix m      -> SMatrix(rref m)
     | _, _      -> failwith "Err Gen"
 
