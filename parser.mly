@@ -97,7 +97,7 @@ expr:
   | VAR    { Var $1 }
   | PI      { PI }
   | E      { E }
-  | ANS    { ANS }
+  | ANS    { Ans }
   | LBRACKET matrix RBRACKET {Matrix $2}
   | TRANS expr {UnOp (Trans, $2)}
   | DET expr {UnOp (Det, $2)}
