@@ -49,9 +49,10 @@ let parse_error _ =
 %token EVAL
 %token RREF
 %token INV
+%token ASS
 %token EOF
 
-%left SUBST FOR IN
+%left SUBST FOR IN ASS
 %left PLUS MINUS
 %left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2
 %left TRANS DET INV EV EVAL RREF
@@ -81,6 +82,7 @@ expr:
   | LPAREN expr RPAREN  %prec LPAREN
            { $2 }
   | expr POW expr    { BinOp (Pow, $1, $3) }
+  | expr ASS expr    { BinOp (Ass, $1, $3) }
   | FLOAT expr       {BinOp (Times, Float (float_of_string $1), $2)}
   | expr MULT expr      { BinOp (Times,  $1, $3) }
   | MINUS expr         { UnOp (Neg, $2) }

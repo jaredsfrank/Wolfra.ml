@@ -5,7 +5,7 @@ open Parse
 let print_intro () = 
     Printf.printf "__        __    _  __                       _ 
 \\ \\      / /__ | |/ _|_ __ __ _   _ __ ___ | |
- \\ \\ /\\ / / _ \| | |_| '__/ _` | | '_ ` _ \| |
+ \\ \\ /\\ / / _ \\| | |_| '__/ _` | | '_ ` _ \\| |
   \\ V  V / (_) | |  _| | | (_| |_| | | | | | |
    \\_/\\_/ \\___/|_|_| |_|  \\__,_(_)_| |_| |_|_|\n\n\n";
     Printf.printf ("Welcome to Wolfra.ml!\nType help at any time for the help function. Type quit to exit the program.\n\nCopyright (c) 2015 Wolfra.ml Industries\nAll Rights Reserved\n\nThis product is protected by copyright and distributed under\nlicenses restricting copying, distribution and decompilation.\n\n"); ()
