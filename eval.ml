@@ -45,7 +45,6 @@ let rec bin_op op s1 s2 =
     | Divide,_,_                 -> times (s1, pow(s2, SFloat (-1.)))
     | Deriv,_,_                  -> deriv s1 s2
     | Integrate,_,_              -> integrate s1 s2
-    | Ass, SVar x, _             -> env:=(x,s2)::!env; s2
     | Ass, _, _                  -> failwith "Improper Assignment"
 
 
@@ -72,6 +71,7 @@ let rec eval = function
     | Float  f                -> SFloat f
     | Var    v when List.mem_assoc v !env -> List.assoc v !env
     | Var    v                -> SVar v
+    | BinOp (Ass, Var x, z)   -> env:=(x,(eval z))::!env; (eval z)
     | BinOp  (op, e1, e2)     -> bin_op op (eval e1) (eval e2)
     | UnOp   (op, e)          -> un_op op (eval e)
     | Matrix m when is_rect m -> SMatrix (List.map (fun l -> List.map eval l) m)

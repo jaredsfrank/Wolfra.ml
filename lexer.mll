@@ -31,6 +31,7 @@ rule token = parse
   | "tan" { TAN }
   | "log" { LOG }
   | "derive" { DERIVE }
+  | "'"     { PRIME }
   | "d(" { DERIVE2 }
   | "pi" { PI }
   | "wrt" {DERIV}

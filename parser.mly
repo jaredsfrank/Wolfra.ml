@@ -30,6 +30,7 @@ let parse_error _ =
 %token FOR
 %token IN
 %token ANS
+%token PRIME
 %token LOG
 %token DIV
 %token PLUS
@@ -54,7 +55,7 @@ let parse_error _ =
 
 %left SUBST FOR IN ASS
 %left PLUS MINUS
-%left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2
+%left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2 PRIME
 %left TRANS DET INV EV EVAL RREF
 %right POW DECIMAL
 %nonassoc VAR LBRACE FLOAT LPAREN PI E  COMMA SEMI LBRACKET
@@ -94,6 +95,9 @@ expr:
   | expr PLUS expr   { BinOp (Plus,   $1, $3) }
   | expr MINUS expr     { BinOp (Minus,  $1, $3) }
   | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
+  | expr PRIME expr     { BinOp  (Deriv, $1, $3) }
+  | expr PRIME PRIME expr     {BinOp (Deriv,BinOp  (Deriv, $1, $4),$4)}
+  | expr PRIME PRIME PRIME expr     {BinOp(Deriv,BinOp (Deriv,BinOp  (Deriv, $1, $5),$5), $5)}
   | DERIVE2 expr DERIV2 expr     { BinOp  (Deriv, $2, $4) }
   | INTEGRATE expr DERIV expr     { BinOp  (Integrate, $2, $4) }
   | VAR    { Var $1 }
