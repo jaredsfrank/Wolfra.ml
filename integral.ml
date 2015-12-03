@@ -2,18 +2,22 @@ open Simplify
 open Derivative
 
 let rec is_constant x' = function
-    | SFloat f -> true
+    | SFloat f           -> true
     | SVar x when x = x' -> false
-    | SVar x  -> true
-    | STimes (c, l) -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
-    | SPlus l -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
-    | SPow (e1, e2) -> is_constant x' e1 && is_constant x' e2
-    | SMatrix l -> List.fold_left (fun accum l' -> accum && List.fold_left (fun accum a -> accum && is_constant x' a) true l') true l
-    | SSin e -> is_constant x' e
-    | SCos e -> is_constant x' e
-    | SLog e -> is_constant x' e
-    | SE -> true
-    | SPI -> true
+    | SVar x             -> true
+    | STimes (c, l)      -> List.fold_left
+                            (fun accum a -> accum && is_constant x' a) true l
+    | SPlus l            -> List.fold_left
+                            (fun accum a -> accum && is_constant x' a) true l
+    | SPow (e1, e2)      -> is_constant x' e1 && is_constant x' e2
+    | SMatrix l          -> List.fold_left (fun accum l' -> accum &&
+                            List.fold_left (fun accum a -> accum &&
+                            is_constant x' a) true l') true l
+    | SSin e             -> is_constant x' e
+    | SCos e             -> is_constant x' e
+    | SLog e             -> is_constant x' e
+    | SE                 -> true
+    | SPI                -> true
 
 let rec integrate s1 s2 =
  match s1, s2 with
@@ -34,7 +38,7 @@ let rec integrate s1 s2 =
  | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
  | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> times(pow(SFloat c1, SFloat (-1.)), SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )))
  | SPow (SPlus (SVar x::[SFloat f]), SFloat (-1.)), SVar v when v = x -> SLog(SPlus (SVar x::[SFloat f]))
- | SMatrix x, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> integrate x s2) l) m)
+ | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> integrate x s2) l) m)
  | SSin x, SVar x'        -> (match x with
                             | SFloat f -> times(SSin x, SVar x')
                             | SPI | SE -> times(SSin x, SVar x')
