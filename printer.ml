@@ -26,6 +26,7 @@ let rec format_expr f e =
     | STimes (c,[]) -> Format.fprintf f "@{<misc>%s@}" (string_of_floats c)
     | STimes (1.,[h]) -> Format.fprintf f "@{<misc>%a@}" (bracket e) h
     | STimes (-1.,[h]) -> Format.fprintf f "@{<misc>-%a@}" (bracket e) h
+    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "@{<misc>%s/%a@}" (string_of_floats c) (bracket e) x
     | STimes (c,[h]) -> Format.fprintf f "@{<misc>%s%a@}" (string_of_floats c) (bracket e) h
     | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "@{<misc>%a/(%a)@}" (bracket e) h (bracket e) (STimes (1.,e::t))
     | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "@{<misc>%s%a/(%a)@}" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,e::t))
@@ -37,7 +38,7 @@ let rec format_expr f e =
                               | SFloat x when x<0. -> Format.fprintf f "@{<misc>%a-%a@}" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
                               | STimes (c,x) when c<0. -> Format.fprintf f "@{<misc>%a-%a@}" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
                               | _ -> Format.fprintf f "@{<misc>%a+%a@}" (bracket e) (SPlus( h2::t)) (bracket e) h1)
-    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "@{<misc>1/(%a)@}" (bracket e) s1
+    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "@{<misc>(1/%a)@}" (bracket e) s1
     | SPow (s1,s2) -> Format.fprintf f "@{<misc>(%a)^(%a)@}" (bracket e) s1 (bracket e) s2
     | SMatrix []  -> Format.fprintf f "@{<misc>"
     | SMatrix [h] -> Format.fprintf f "@{<misc>[%a]@}" print_list h

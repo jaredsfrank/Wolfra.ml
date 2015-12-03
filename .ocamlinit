@@ -17,8 +17,11 @@
 #load "lexer.d.cmo";;
 #load "parse.d.cmo";;
 #load "printer.d.cmo";;
-#load "eval.d.cmo";;
 #load "simplify.d.cmo";;
+#load "matrix.d.cmo";;
+#load "derivative.d.cmo";;
+#load "integral.d.cmo";;
+#load "eval.d.cmo";;
 
 (** For convenience, we open a bunch of modules *)
 open Ast
@@ -26,3 +29,6 @@ open Printer
 open Simplify
 open Eval
 open Parse
+open Matrix
+open Derivative
+open Integral
