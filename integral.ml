@@ -22,7 +22,7 @@ let rec integrate s1 s2 =
  | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
  | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> times(pow(SFloat c1, SFloat (-1.)), SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )))
  | SPow (SPlus (SVar x::[SFloat f]), SFloat (-1.)), SVar v when v = x -> SLog(SPlus (SVar x::[SFloat f]))
- | SMatrix x, SVar _     -> failwith "TODO"
+ | SMatrix x, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> integrate x s2) l) m)
  | SSin x, SVar x'        -> (match x with
                             | SFloat f -> times(SSin x, SVar x')
                             | SPI | SE -> times(SSin x, SVar x')
