@@ -27,3 +27,6 @@ val trans_matrix: s_expr list list -> s_expr list list
 
 (*[determinant m] returns the determinant of m*)
 val determinant: s_expr list list -> s_expr
+
+(*[eigenv m] returns the eigenvalues of a matrix m *)
+val eigenv: s_expr list list -> s_expr * s_expr
