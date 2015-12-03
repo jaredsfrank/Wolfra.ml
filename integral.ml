@@ -3,11 +3,11 @@ open Derivative
 
 let is_constant s = true (*JUST A PLACEHOLDER. STILL NEEDS TO BE DONE*)
 
-let rec integrate s1 s2 = 
+let rec integrate s1 s2 =
  match s1, s2 with
  | SFloat f, SVar x -> times(SFloat f, s2)
  | SVar x, SVar x' -> if (x=x') then (times(SFloat 0.5, pow(s1, SFloat 2.)))
-                      else times(s1, s2) 
+                      else times(s1, s2)
  | STimes (c,[h]), SVar _   -> times(SFloat c, integrate h s2)
  | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (SSin x) s2
  | STimes (c,(SCos x)::t), SVar _ -> by_parts (STimes(c,t)) (SCos x) s2
@@ -23,23 +23,27 @@ let rec integrate s1 s2 =
  | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> times(pow(SFloat c1, SFloat (-1.)), SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )))
  | SPow (SPlus (SVar x::[SFloat f]), SFloat (-1.)), SVar v when v = x -> SLog(SPlus (SVar x::[SFloat f]))
  | SMatrix x, SVar _     -> failwith "TODO"
- | SSin x, SVar x'        -> (match x with 
+ | SSin x, SVar x'        -> (match x with
                             | SFloat f -> times(SSin x, SVar x')
-                            | SPI | SE -> times(SSin x, SVar x')                            
-                            | SVar v when v = x'-> SCos x
+                            | SPI | SE -> times(SSin x, SVar x')
+                            | SVar v when v = x'-> times(SFloat (-1.),SCos x)
                             | SVar v when v <> x'-> times(SSin x, SVar x')
                             | STimes(f, [SVar v]) when v=x' -> times(pow(times(SFloat (-1.), SFloat f), SFloat (-1.)), SCos(x))
                             | STimes(f, [SVar v]) when v<>x' -> times(SSin x, SVar x')
+                            | SPlus(SVar v::[SFloat f]) when v = x'-> times(SFloat (-1.), SCos(SPlus(SVar v::[SFloat f])))
+                            | SPlus(SVar v::[SFloat f]) when v <> x'-> times(SSin x, SVar x')
                             | _ -> failwith "TODO")
- | SCos x, SVar x'        -> (match x with 
+ | SCos x, SVar x'        -> (match x with
                             | SFloat f -> times(SCos x, SVar x')
-                            | SPI | SE -> times(SCos x, SVar x')                           
-                            | SVar v when v = x' -> times(SFloat (-1.), SSin x)
+                            | SPI | SE -> times(SCos x, SVar x')
+                            | SVar v when v = x' -> SSin x
                             | SVar v when v <> x' -> times(SCos x, SVar x')
                             | STimes(f, [SVar v]) when v=x' -> times(pow(SFloat f, SFloat (-1.)), SSin(x))
-                            | STimes(f, [SVar v]) when v<>x' -> times(SCos x, SVar x')                            
+                            | STimes(f, [SVar v]) when v<>x' -> times(SCos x, SVar x')
+                            | SPlus(SVar v::[SFloat f]) when v = x'-> SSin(SPlus(SVar v::[SFloat f]))
+                            | SPlus(SVar v::[SFloat f]) when v <> x'-> times(SCos x, SVar x')
                             | _ -> failwith "TODO")
- | SLog x, SVar x'       -> (match x with 
+ | SLog x, SVar x'       -> (match x with
                             | SFloat f -> times(SLog x, SVar x')
                             | SPI -> times(SLog x, SVar x')
                             | SVar v when v = x' -> plus(times(x, SLog x), times(SFloat (-1.), x))
