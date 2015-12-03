@@ -29,6 +29,7 @@ let parse_error _ =
 %token SUBST
 %token FOR
 %token IN
+%token ANS
 %token LOG
 %token DIV
 %token PLUS
@@ -96,6 +97,7 @@ expr:
   | VAR    { Var $1 }
   | PI      { PI }
   | E      { E }
+  | ANS    { ANS }
   | LBRACKET matrix RBRACKET {Matrix $2}
   | TRANS expr {UnOp (Trans, $2)}
   | DET expr {UnOp (Det, $2)}
