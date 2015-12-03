@@ -3,12 +3,12 @@ open Eval
 open Parse
 
 let rec main () = 
-    Printf.printf "Write an expression: \n";
+    Printf.printf "Write an expression: \n>> ";
     let result = read_line () in
     try
         match result with
         | "quit" -> Printf.printf "done"; ()
-        | s -> Printf.printf "Result:\n"; print_expr (eval (parse_expr s)); Printf.printf "\n\n\n"; 
+        | s -> Printf.printf "-----------------------------------------------\n"; print_expr (eval (parse_expr s)); Printf.printf "\n\n\n"; 
                prev := (eval (parse_expr s)); main()
     with
     | Failure "TODO" -> Printf.printf "That feature is not yet implemented\n\n"; main()
