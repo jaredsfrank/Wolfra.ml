@@ -154,13 +154,7 @@ let quadratic a b c =
   | _ -> failwith "This should not happen"
 
 let eigenv m =
-    let newm = [[plus(List.hd (List.hd m),times(SVar "lambda",SFloat (-1.)));
-                 List.nth (List.hd m) 1];
-                [List.hd (List.nth m 1);
-                 plus(List.nth (List.nth m 1) 1,times(SVar "lambda",SFloat (-1.)))]] in
-    let det = determinant newm in
-    (match det with
-    |  SPlus p -> let b = (match List.hd p with STimes (q,p) -> SFloat q | _ -> failwith "Nope") in
-                  let c = List.nth p 2 in
-                  quadratic (SFloat 1.) b c
-    | _ -> failwith "This shouldn't happen")
+    let det = determinant m in
+    quadratic (SFloat 1.)
+    (times(SFloat (-1.),(plus(List.hd (List.hd m),List.nth (List.nth m 1) 1))))
+    det
