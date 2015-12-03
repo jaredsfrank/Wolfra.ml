@@ -4,34 +4,38 @@ open Matrix
 open Derivative
 open Integral
 
+let prev = ref (SFloat 42.)
 
 let rec subst ((k,v): string * float ) e =
   match e with
-  | SFloat f ->  e
+  | SFloat f            ->  e
   | SVar x' when x' = k -> SFloat v
-  | SVar x -> e
-  | STimes (c, []) -> SFloat c
-  | STimes (c, h::t) -> times(subst (k,v) h, subst (k,v) (STimes(c,t)))
-  | SPlus [] -> SFloat 0.
-  | SPlus (h::t) -> plus(subst (k,v) h, subst (k,v) (SPlus t))
-  | SPow (e1,e2) -> pow (subst (k,v) e1, subst  (k,v) e2)
-  | SMatrix m -> SMatrix (List.map (fun l -> List.map (subst (k,v)) l) m)
-  | SSin x -> SSin (subst (k,v) x)
-  | SCos x -> SCos (subst (k,v) x)
-  | SLog x -> SLog (subst (k,v) x)
-  | SE -> SE
-  | SPI -> SPI
+  | SVar x              -> e
+  | STimes (c, [])      -> SFloat c
+  | STimes (c, h::t)    -> times(subst (k,v) h, subst (k,v) (STimes(c,t)))
+  | SPlus []            -> SFloat 0.
+  | SPlus (h::t)        -> plus(subst (k,v) h, subst (k,v) (SPlus t))
+  | SPow (e1,e2)        -> pow (subst (k,v) e1, subst  (k,v) e2)
+  | SMatrix m           -> SMatrix (List.map
+                           (fun l -> List.map (subst (k,v)) l) m)
+  | SSin x              -> SSin (subst (k,v) x)
+  | SCos x              -> SCos (subst (k,v) x)
+  | SLog x              -> SLog (subst (k,v) x)
+  | SE                  -> SE
+  | SPI                 -> SPI
 
 let rec bin_op op s1 s2 =
     match op, s1, s2 with
-    | Plus, SMatrix _, _        -> matrix_plus (s1, s2)
-    | Plus, _, SMatrix _        -> matrix_plus (s1, s2)
-    | Plus, _, _                -> plus (s1, s2)
+    | Plus, SMatrix _, _         -> matrix_plus (s1, s2)
+    | Plus, _, SMatrix _         -> matrix_plus (s1, s2)
+    | Plus, _, _                 -> plus (s1, s2)
     | Times, SMatrix _, _        -> matrix_times (s1, s2)
     | Times, _, SMatrix _        -> matrix_times (s1, s2)
     | Times, _,_                 -> times (s1, s2)
-    | Minus, SMatrix _,_         -> matrix_plus (s1, matrix_times(s2, SFloat (-1.)))
-    | Minus, _,SMatrix _         -> matrix_plus (s1, matrix_times(s2, SFloat (-1.)))
+    | Minus, SMatrix _,_         -> matrix_plus
+                                    (s1, matrix_times(s2, SFloat (-1.)))
+    | Minus, _,SMatrix _         -> matrix_plus
+                                    (s1, matrix_times(s2, SFloat (-1.)))
     | Minus, _,_                 -> plus (s1, times(s2, SFloat (-1.)))
     | Pow,_,_                    -> pow (s1, s2)
     | Divide,SMatrix _,SMatrix _ -> failwith "Cannot divide matrices"
@@ -51,7 +55,7 @@ let un_op op s =
     | Tan, _       -> times(SSin s, pow(SCos s, SFloat (-1.)))
     | Log, _       -> SLog s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
-    | Det, SMatrix m when is_square m -> determinant m 
+    | Det, SMatrix m when is_square m -> determinant m
     | Det, SMatrix m       -> failwith "Err Square"
     | Inv, SMatrix m when determinant m = SFloat 0. -> failwith "Determinant = 0"
     | Inv, SMatrix m  ->  SMatrix(inv_matrix m)
@@ -73,4 +77,4 @@ let rec eval = function
     | Subst (_)               -> failwith "Cannot substitute that"
     | E                       -> SE
     | PI                      -> SPI
-
+    | Ans                     -> !prev

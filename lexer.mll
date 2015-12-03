@@ -41,6 +41,7 @@ rule token = parse
   | ')'     { RPAREN }
   | "sub" {SUBST}
   | "for"      {FOR}
+  | "Ans"      {ANS}
   | ","        {COMMA}
   | ";"        {SEMI}
   | "in"       {IN}
