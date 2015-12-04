@@ -11,8 +11,10 @@ let rec main () =
         match result with
         | "quit" -> print "done"; ()
         | "clear" -> env := []; print "";main()
-        | s -> print_expr (eval (parse_expr s));
-               prev := (eval (parse_expr s)); main()
+        | s -> let (e,l) =  (eval (parse_expr s)) in
+                print_expr e; 
+                List.iter print l;
+                prev := e; main()
     with
     | Failure "TODO" -> print "That feature is not yet implemented"; main()
     | Failure "Division by 0" -> print "Uh oh...Division by 0"; main()
