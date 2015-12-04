@@ -65,7 +65,7 @@ and plus_help l s =
                 | Some (SFloat 0.) -> t
                 | Some e -> e::t
                 | None -> h::(plus_help t s))
-                
+
 
 (* Returns a fully simplified expression from the added expressions*)
 and plus = function
@@ -105,7 +105,7 @@ and compare_mult (e1: s_expr) (e2: s_expr) : s_expr option =
 
   and times_help l exp =
     match l, exp with
-    | [], _ -> [exp]  
+    | [], _ -> [exp]
     | h::t, _ -> (match compare_mult exp h with
                 | Some (SFloat 1.) -> t
                 | Some e -> e::t
@@ -126,4 +126,18 @@ and times (e1,e2) =
 and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
 and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
+let log_function = function
+  | SFloat a        -> SFloat (log a)
+  | SE              -> SFloat 1.
+  | e               -> SLog e
+  (*| STimes (c,l)  -> SPlus*)
 
+let sin_function = function
+  | SFloat a          -> SFloat (sin a)
+  | SPI               -> SFloat (0.)
+  | e                 -> SSin e
+
+let cos_function = function
+  | SFloat a          -> SFloat (sin a)
+  | SPI               -> SFloat (-1.)
+  | e                 -> SSin e
