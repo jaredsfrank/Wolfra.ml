@@ -141,7 +141,7 @@ let log_function = function
   | SFloat a        -> SFloat (log a)
   | SE              -> SFloat 1.
   | e               -> SLog e
-  (*| STimes (c,l)  -> SPlus*)
+
 
 let sin_function = function
   | SFloat a          -> SFloat (sin a)
@@ -151,4 +151,7 @@ let sin_function = function
 let cos_function = function
   | SFloat a          -> SFloat (sin a)
   | SPI               -> SFloat (-1.)
+  | STimes(f, [SPI])  when (mod_float f 2. = 0.) -> SFloat (1.)
+  | STimes(f, [SPI])  when (mod_float f 2. = 1.) -> SFloat (-1.)
+  | STimes(f, [SPI])  when (mod_float f 1. = 0.5) -> SFloat (0.)
   | e                 -> SSin e
