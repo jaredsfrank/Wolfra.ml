@@ -2,11 +2,22 @@ open Simplify
 open Fractions
 (*This code is heavily inspired by the printer from A4 OCalf*)
 
+type deriv_print = 
+| PNone
+| PConst of s_expr * s_expr
+| PVar of s_expr * s_expr
+| PProd of s_expr * s_expr
+| PPlus of s_expr * s_expr
+| PPow of s_expr * s_expr 
+| PSin of s_expr * s_expr 
+| PCos of s_expr * s_expr
+| PLog of s_expr * s_expr
+
+
 let string_of_floats f =
     let s = string_of_float f in
     if String.get s ((String.length s)-1) = '.' then String.sub s 0 ((String.length s)-1)
     else s
-
 
 
 let rec format_expr f e = 

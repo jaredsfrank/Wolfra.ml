@@ -44,7 +44,7 @@ let rec bin_op op s1 s2 =
     | Divide,_,SMatrix _         -> matrix_times (s2, pow(s1, SFloat (-1.)))
     | Divide,SMatrix _,_         -> matrix_times (s1, pow(s2, SFloat (-1.)))
     | Divide,_,_                 -> times (s1, pow(s2, SFloat (-1.)))
-    | Deriv,_,_                  -> let (e1, l) = (deriv s1 s2) in List.iter print l;e1
+    | Deriv,_,_                  -> let (e1, l) = (deriv s1 s2) in e1
     | Integrate,_,_              -> integrate s1 s2
     | Ass, _, _                  -> failwith "Improper Assignment"
 

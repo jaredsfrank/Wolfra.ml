@@ -1,16 +1,17 @@
 open Simplify
+open Printer
 
 (*This module system is inspired by A6 Monad section*)
 module type Monad = sig
  type 'a t
  val bind : 'a t -> ('a -> 'b t) -> 'b t
+  val (>>=): 'a t -> ('a -> 'b t) -> 'b t
  val return : 'a -> 'a t
 end
 
 module type   LogMonad = sig
   include Monad
   val log: string list -> unit t
-  val (>>=): 'a t -> ('a -> 'b t) -> 'b t
 end
 
 module Logger : (LogMonad with type 'a t = 'a * string list) =
@@ -26,7 +27,7 @@ open Logger
 
 let rec deriv s1 s2 =
   match s1, s2 with
-  | SFloat _, _ | SPI, SVar _ | SE, SVar _ -> bind (log["Derivative of a constant is zero"]) 
+  | SFloat _, _ | SPI, SVar _ | SE, SVar _ -> bind (log["Deriv of a const = zero"]) 
                                               (fun () -> return (SFloat 0.))
   | SVar x, SVar x'         -> if (x=x') then return (SFloat 1.) else return (SFloat 0.)
   | STimes (c,[h]), SVar _  ->  (deriv h s2) >>= (fun x -> (times(SFloat c, x), ["Times"]))

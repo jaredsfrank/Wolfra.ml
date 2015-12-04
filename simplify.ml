@@ -131,9 +131,9 @@ let sin_function = function
   | e                 -> SSin e
 
 let cos_function = function
-  | SFloat a          -> SFloat (sin a)
+  | SFloat a          -> SFloat (cos a)
   | SPI               -> SFloat (-1.)
   | STimes(f, [SPI])  when (mod_float f 2. = 0.) -> SFloat (1.)
   | STimes(f, [SPI])  when (mod_float f 2. = 1.) -> SFloat (-1.)
   | STimes(f, [SPI])  when (mod_float f 1. = 0.5) -> SFloat (0.)
-  | e                 -> SSin e
+  | e                 -> SCos e
