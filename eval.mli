@@ -15,4 +15,4 @@ val subst: (string * float) -> s_expr -> s_expr
  *  [eval e] returns [v] where
  *  e simplifies to expression v
  *)
-val eval: expr -> s_expr
+val eval: expr -> s_expr * string list

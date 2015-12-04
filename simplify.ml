@@ -1,18 +1,29 @@
 open Ast
 
+
+(*This module system is inspired by A6 Monad section*)
 module type Monad = sig
  type 'a t
  val bind : 'a t -> ('a -> 'b t) -> 'b t
  val return : 'a -> 'a t
 end
 
-module A_Expr = struct
-    type 'a t = 'a * string
-    let bind (x,s1) f =
-        let (y,s2) = f x in
-        (y,s1^s2)
-    let return x = (x, "")
+module type LogMonad = sig
+  include Monad
+  val log: string list -> unit t
+  val bind2: 'a t -> 'a t -> ('a -> 'a -> 'b t) -> 'b t
 end
+
+module Logger : (LogMonad with type 'a t = 'a * string list) =
+  struct
+    type 'a t = 'a * string list
+    let bind (x, s1) f = let (y, s2) = f x in (y, s2@s1)
+    let (>>=) = bind
+    let bind2 (x, s1) (x2, s2) f = let (y, s3) = f x x2 in (y, s3@s2@s1)
+    let return x = (x, [])
+    let log s = ((), s)
+
+  end
 
 type s_expr =
     | SFloat of float

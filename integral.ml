@@ -61,7 +61,7 @@ let rec integrate s1 s2 =
  | _, _                  -> failwith "This shouldn't happen"
 
 and by_parts u dv s2 =
-    let du = deriv u s2 in let v = integrate dv s2 in
+    let du = fst (deriv u s2) in let v = integrate dv s2 in
     plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)
 
 
