@@ -37,7 +37,7 @@ let rec compare (e1: s_expr) (e2: s_expr): s_expr option =
     match e1, e2 with
     | a, b when a = b -> Some (times (SFloat 2., e1))
     | SFloat a, SFloat b -> Some (SFloat (a+. b))
-    | STimes (c1,l1), STimes (c2,l2) when combinable l1 l2 ->  Some (STimes (c1+.c2,l1))
+    | STimes (c1,l1), STimes (c2,l2) when combinable l1 l2 ->  Some (unbox (STimes (c1+.c2,l1)))
     | s, STimes (c,l) when combinable [s] l -> Some (unbox (STimes (1.+.c,l)))
     | STimes (c,l), s when combinable [s] l -> Some (unbox (STimes (1.+.c,l)))
     | _, _ -> None
