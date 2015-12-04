@@ -72,6 +72,7 @@ and pow = function
   | SFloat 1., _                    -> SFloat 1.
   | s, SFloat 1.                    -> s
   | s, SFloat 0.                    -> SFloat 1.
+  | SE, SLog (e)                    -> e
   | SFloat f1, SFloat f2            -> SFloat (f1 ** f2)
   | SPlus l, SFloat f when (mod_float f 1. = 0.) && (f >0.) -> (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
   | STimes (c,[h]), x -> times(pow(SFloat c,x),pow(h,x))
@@ -119,6 +120,7 @@ let rec log_function = function
   | SFloat a        -> SFloat (log a)
   | SE              -> SFloat 1.
   | STimes (c,l)    -> s_plus (SFloat(log c)::(List.map (fun x -> log_function x) l))
+  | SPow (e1,e2)    -> s_times [e2;(log_function e1)]
   | e               -> SLog e
 
 
