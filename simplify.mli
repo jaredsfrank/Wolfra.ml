@@ -56,3 +56,9 @@ val s_times: s_expr list -> s_expr
  * PRECONDITION: All elements of l must be fully simplified
 *)
 val s_plus: s_expr list -> s_expr
+
+val log_function: s_expr -> s_expr
+
+val sin_function: s_expr -> s_expr
+
+val cos_function: s_expr -> s_expr

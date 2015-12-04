@@ -20,9 +20,9 @@ let rec subst ((k,v): string * float ) e =
   | SPow (e1,e2)        -> pow (subst (k,v) e1, subst  (k,v) e2)
   | SMatrix m           -> SMatrix (List.map
                            (fun l -> List.map (subst (k,v)) l) m)
-  | SSin x              -> SSin (subst (k,v) x)
-  | SCos x              -> SCos (subst (k,v) x)
-  | SLog x              -> SLog (subst (k,v) x)
+  | SSin x              -> sin_function (subst (k,v) x)
+  | SCos x              -> cos_function (subst (k,v) x)
+  | SLog x              -> log_function (subst (k,v) x)
   | SE                  -> SE
   | SPI                 -> SPI
 
@@ -53,10 +53,10 @@ let rec bin_op op s1 s2 =
 let un_op op s =
     match op, s with
     | Neg, _       -> times (SFloat (-1.), s)
-    | Sin, _       -> SSin s
-    | Cos, _       -> SCos s
+    | Sin, _       -> sin_function s
+    | Cos, _       -> cos_function s
     | Tan, _       -> times(SSin s, pow(SCos s, SFloat (-1.)))
-    | Log, _       -> SLog s
+    | Log, _       -> log_function s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m
     | Det, SMatrix m       -> failwith "Err Square"
