@@ -1,4 +1,5 @@
 open Simplify
+open Fractions
 (*This code is heavily inspired by the printer from A4 OCalf*)
 
 let string_of_floats f =
@@ -22,18 +23,24 @@ let rec format_expr f e =
         | [h] -> Format.fprintf f "%a" print_list h
         | h::t -> Format.fprintf f "%a;%a" print_list h (print_list_list) t
     in
+    let print_frac f d = 
+      match is_int d with
+      | true -> Format.fprintf f "%s" (string_of_floats d)
+      | false -> let (num, den) = frac d in
+                 Format.fprintf f "(%s/%s)" (string_of_int num) (string_of_int den)
+    in
     match e with
-    | SFloat n -> Format.fprintf f "%s" (string_of_floats n)
+    | SFloat n -> print_frac f n
     | SVar x -> Format.fprintf f "%s" x
-    | STimes (c,[]) -> Format.fprintf f "%s" (string_of_floats c)
+    | STimes (c,[]) -> Format.fprintf f "%a" (print_frac) c
     | STimes (1.,[h]) -> Format.fprintf f "%a" (bracket e) h
     | STimes (-1.,[h]) -> Format.fprintf f "-%a" (bracket e) h
-    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%s/%a" (string_of_floats c) (bracket e) x
-    | STimes (c,[h]) -> Format.fprintf f "%s%a" (string_of_floats c) (bracket e) h
+    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" (print_frac) c (bracket e) x
+    | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c (bracket e) h
     | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" (bracket e) h (bracket e) (STimes (1.,e::t))
-    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%s%a/(%a)" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,e::t))
+    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" (print_frac) c (bracket e) h (bracket e) (STimes (1.,e::t))
     | STimes (1., h::t) -> Format.fprintf f "%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
-    | STimes (c, h::t) -> Format.fprintf f "%s%a*%a" (string_of_floats c) (bracket e) h (bracket e) (STimes (1.,t))
+    | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c (bracket e) h (bracket e) (STimes (1.,t))
     | SPlus [] -> Format.fprintf f ""
     | SPlus [h] -> Format.fprintf f "%a" (bracket e) h
     | SPlus (h1::h2::t) -> (match h2 with 
