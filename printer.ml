@@ -27,6 +27,7 @@ let rec format_expr f e =
       match is_int d with
       | true -> Format.fprintf f "%s" (string_of_floats d)
       | false -> let (num, den) = frac d in
+                if is_int ((float_of_int den)/.10000.) then Format.fprintf f "%s" (string_of_floats d) else
                  Format.fprintf f "(%s/%s)" (string_of_int num) (string_of_int den)
     in
     match e with
