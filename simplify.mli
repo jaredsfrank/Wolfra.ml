@@ -1,17 +1,5 @@
 open Ast
 
-(*This module system is inspired by A6 Monad section*)
-module type Monad = sig
- type 'a t
- val bind : 'a t -> ('a -> 'b t) -> 'b t
- val return : 'a -> 'a t
-end
-
-module type LogMonad = sig
-  include Monad
-  val log: string list -> unit t
-  val bind2: 'a t -> 'a t -> ('a -> 'a -> 'b t) -> 'b t
-end
 
 
 

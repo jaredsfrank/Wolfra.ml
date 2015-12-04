@@ -11,9 +11,8 @@ let rec main () =
         match result with
         | "quit" -> print "done"; ()
         | "clear" -> env := []; print "";main()
-        | s -> let (e,l) =  (eval (parse_expr s)) in
+        | s -> let e =  (eval (parse_expr s)) in
                 print_expr e; 
-                List.iter print l;
                 prev := e; main()
     with
     | Failure "TODO" -> print "That feature is not yet implemented"; main()
