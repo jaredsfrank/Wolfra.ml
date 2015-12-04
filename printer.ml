@@ -37,7 +37,7 @@ let rec format_expr f e =
     | SPlus (h1::h2::t) -> (match h2 with 
                               | SFloat x when x<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
                               | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
-                              | _ -> Format.fprintf f "%a+%a" (bracket e) (SPlus( h2::t)) (bracket e) h1)
+                              | _ -> Format.fprintf f "%a+%a" (bracket e) h1 (bracket e) (SPlus( h2::t)))
     | SPow (s1,SFloat (-1.)) -> Format.fprintf f "(1/%a)" (bracket e) s1
     | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" (bracket e) s1 (bracket e) s2
     | SMatrix []  -> Format.fprintf f ""
