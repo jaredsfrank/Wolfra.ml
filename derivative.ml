@@ -40,7 +40,7 @@ let rec deriv s1 s2 =
                                 (s_plus [x; y], ["Plus 2"])
   | SPow (f, g), SVar _     ->  deriv g s2 >>= fun dg ->
                                 deriv f s2 >>= fun df ->
-                                  (times(pow(f,g),plus(times(dg, SLog(f)),
+                                  (times(pow(f,g),plus(times(dg, log_function f),
                                  s_times[g; df; pow(f, SFloat (-1.))])), ["Pow"])
   | SMatrix m, SVar _       -> 
                                 return (SMatrix  (List.map (fun l -> List.map
