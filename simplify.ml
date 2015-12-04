@@ -124,6 +124,9 @@ let log_function = function
 let sin_function = function
   | SFloat a          -> SFloat (sin a)
   | SPI               -> SFloat (0.)
+  | STimes(f, [SPI])  when (mod_float f 1. = 0.) -> SFloat (0.)
+  | STimes(f, [SPI])  when (mod_float (f -. 0.5) 2. = 0.) -> SFloat (1.)
+  | STimes(f, [SPI])  when (mod_float (f -. 0.5) 2. = 1.) -> SFloat (-1.)
   | e                 -> SSin e
 
 let cos_function = function
