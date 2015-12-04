@@ -115,9 +115,10 @@ and times (e1,e2) =
 and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
 and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
 
-let log_function = function
+let rec log_function = function
   | SFloat a        -> SFloat (log a)
   | SE              -> SFloat 1.
+  | STimes (c,l)    -> s_plus (SFloat(log c)::(List.map (fun x -> log_function x) l))
   | e               -> SLog e
 
 
