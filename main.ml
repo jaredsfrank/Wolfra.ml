@@ -25,18 +25,17 @@ let rec main () =
     | Failure "No complex solutions" -> print "Complex solutions are not supported"; main ()
     | _  -> print "Please enter in a proper expression"; main()
 and help_menu () =
-    Printf.printf "\n>> ";
+    Printf.printf ">> ";
     let input = String.lowercase(read_line ()) in
     let _ = Sys.command "clear" in
-    print_help (); 
     match input with
-    | "main" -> print_main_help (); help_menu ();
+    | "main" ->  print_help (); print_main_help (); help_menu ();
     | "basic operation" -> print_basic_help ();  help_menu ()
     | "derivatives" -> print_deriv_help (); help_menu ()
     | "integrals" -> print_integ_help (); help_menu ()
     | "matrices" -> print_matr_help  (); help_menu ()
     | "" -> let _ = Sys.command "clear" in print_intro (); main()
-    | _ -> print_main_help ();help_menu ()
+    | _ -> print_help (); print_main_help ();help_menu ()
 
 
 

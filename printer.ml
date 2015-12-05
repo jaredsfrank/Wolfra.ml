@@ -128,7 +128,7 @@ let print_help () =
   |  _  |  __/ | |_) | | |  | |  __/ | | | |_| |
   |_| |_|\\___|_| .__/  |_|  |_|\\___|_| |_|\\__,_|
                |_|                              
-   " 
+   "
 
 let print_main_help () =
    print "\027[38;5;1;1mThis is a symbolic computation program inspired by WolframAlpha
@@ -147,32 +147,102 @@ let print_main_help () =
   "
 
   let print_basic_help () =
-    print "\027[38;5;1;1mBasic operations
+    print "\027[38;5;3m BASIC OPERATION
+    \027[38;5;1;1m
+    Variables: Any combination of adjacent letters
+    Reserved Variables: pi, e, c, [any word that is used as a command]
 
-    To return to the main help menu, type main
-    OR press ENTER to return
-    "
+    Assignment: Typing [var] = [expr] assigns that expression to the variable
+                Typing 'clear' removes all previously made assignments.
+                EX: f = x^3 [ENTER] f + 2x => x^3 + 2x
+
+    Example Entries and Results (Signified by =>)
+    * Multiplication:3*5 => 15,  x*y => x*y, 3x => 3x
+    * Addition:      3+5 => 8,   x+y => x+y, 2*x - x => x
+    * Subtraction:   3-5 => -2,  2-x => 2-x
+    * Division:      3/5 => 3/5, x/y => x/y, x/x => 1
+    * Exponents:     3^2 => 9,   x^y = (x)^(y)
+    * Trig:          cos(pi) => -1, sin(x) => sin(x), tan(x) => sin(x)/cos(x)
+    * Natural Log:   log(e) => 1, log(x) => log(x)
+    * Distribution:  (x+y)^2 => 2y*x+(y)^(2)+(x)^(2)
+    * Substitution:  sub 3 for x in y*x^2 => 9y
+   
+    To return to the main help menu, type MAIN
+    OR press ENTER to return"
 
   let print_deriv_help () = 
-    print "\027[38;5;1;1mDerivatives
+    print "\027[38;5;3m DERIVATIVES
+    \027[38;5;1;1m
+    Derivatives for all types of expressions are fully functional
 
-    To return to the main help menu, type main
-    OR press ENTER to return
-    "
+    There are 3 notations for denoting a derivative:
+    (1) derive [expr] wrt [var]
+        EX: derive x^3 wrt x => 3x^2
+    (2) d([expr])/d[var]
+        EX: d(sin(x*y))/dx => cos(x*y)*y
+    (3) [var] = [expr] [ENTER] [var][' or '' or '''][var2]
+        f = x^5
+        f'(x) = 5x^4
+        f''(x) = 20x^3
+        f'''(x) = 60x^2
+
+    More Complex Example
+      derive x^y*cos(x) wrt x => y*(x)^(y-1)*cos(x)-sin(x)*(x)^(y)
+
+
+
+    To return to the main help menu, type MAIN
+    OR press ENTER to return"
 
   let print_integ_help () =
-    print "\027[38;5;1;1mIntegrals
+    print "\027[38;5;3m DERIVATIVES
+    \027[38;5;1;1m
+    Integrals are currently in beta...not fully functional.
+    Fully supported integrals:
+      (where [c] represents any non-variable expr
+       and [x] represents the integrating variable
+      [i] = [c] | [x] | [c]/[x] | e^([c]*x) | [x]^[c] | 1/([c][x]) | sin([c][x])
+            | cos([c][x]) | log([c][x]) | [i]+[i]
+    Not supported integrals:
+      Any integral requiring u substitution that is not explicitly supported
+      or that may lead to inverse trig.
+    Semi Supported:
+      Some By-Parts integration: Highlights: x*sin(2x), (e^x)*x, cos(x)*x^2
 
-    To return to the main help menu, type main
-    OR press ENTER to return
-    "
+    To denote an integral:
+      integrate [expr] wrt [var] EX: integrate x^3 wrt x => (1/3)x^3
+
+    Definite integrals are not explicitly supported but are easily solved for:
+      EX: To solve for the integral of x^3 from 5 to 3
+        f = integrate x^3 wrt x [ENTER] (sub 5 for x in f) - (sub 3 for x in f)
+
+    To return to the main help menu, type MAIN
+    OR press ENTER to return"
 
   let print_matr_help () =
-    print "\027[38;5;1;1mMatrices
+    print "\027[38;5;3m MATRICES
+    \027[38;5;1;1m
+    Matrices are denoted in the following way:
+      Columns are separated by commaas. Rows are separated by semicolons
+      EX: To express [1 3], write [1,3;5,6] 
+                     [5 6]
 
-    To return to the main help menu, type main
-    OR press ENTER to return
-    "
+    Vectors are denoted by a list of expressions separated by semicolons
+      EX: 3i + 5j + 6k is written as [3;5;6]
+
+    Multiplication: [1,2;3,4] * [a,b;c,d] => [a+2c,b+2d;3a+4c,3b+4d]
+    Addition:       [1,2;3,4] + [a,b;c,d] => [1+a,2+b;3+c,4+d]
+    Transpose:      [a,b;c,d] => [a,c;b,d]
+    Inverse:        inverse [1,2,3;0,1,4;5,6,0] => [-24,18,5;20,-15,-4;-5,4,1]
+    Reduce Row Ech: RREF [1,2,3;4,5,6] => [1,0,-1;-0,1,2]
+    
+    EigenValues: (Only 2x2) are supported
+      EX: eigenvalue [2,7;-1,6] => [lambda;1,-5]
+        This result represnts the two eigenvalues: 1, and -5
+
+
+    To return to the main help menu, type MAIN
+    OR press ENTER to return"
 
 
 

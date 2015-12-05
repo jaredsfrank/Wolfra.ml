@@ -11,15 +11,15 @@ let rec integrate s1 s2 =
  | STimes (c,[h]), SVar _   -> times(SFloat c, integrate h s2)
  | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (SSin x) s2
  | STimes (c,(SCos x)::t), SVar _ -> by_parts (STimes(c,t)) (SCos x) s2
+ | STimes (c,(SPow(SE, x))::t), SVar _ -> by_parts (STimes(c,t)) (SPow(SE, x)) s2
  | STimes (c,h::t), SVar _ -> by_parts h (STimes(c,t)) s2
  | SPlus [h], SVar _     -> integrate h s2
  | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
  | SPow (SVar x, SFloat (-1.)), SVar x' when x = x' -> SLog(SVar x)
  | SPow (SVar x, g), SVar x' when x = x' && is_constant g ->  divide(pow(SVar x, plus(SFloat 1., g)),plus(SFloat 1., g))
+ | SPow (SVar x, g), SVar x' when is_constant g -> times(s1, SVar x')
  | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
  | SPow (SE, STimes(c,[SVar x])), SVar x' when x = x' ->times(SFloat (1./.c), SPow(SE, STimes(c,[SVar x])))
- | SPow (SVar f, SFloat g), SVar x' when f = x' -> divide(pow(SVar f,plus(SFloat g, SFloat 1.)), plus(SFloat g, SFloat 1.))
- | SPow (SVar f, SFloat g), SVar x' when f <> x' -> times(SPow (SVar f, SFloat g), SVar x')
  | SPow ( SPlus( STimes(c1,[SVar v]) :: [SFloat c2] ), SFloat (-1.)), SVar v' when v'=v -> divide(SLog(SPlus( STimes(c1,[SVar v]) :: [SFloat c2] )), SFloat c1)
  | SPow (SPlus (SVar x::[SFloat f]), SFloat (-1.)), SVar v when v = x -> SLog(SPlus (SVar x::[SFloat f]))
  | SMatrix m, SVar _     -> SMatrix (List.map (fun l -> List.map (fun x -> integrate x s2) l) m)
