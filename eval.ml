@@ -60,10 +60,11 @@ let un_op op s =
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m
     | Det, SMatrix m       -> failwith "Err Square"
-    | Inv, SMatrix m when determinant m = SFloat 0. -> failwith "Determinant = 0"
+    | Inv, SMatrix m when determinant m = SFloat 0. ->failwith "Determinant = 0"
     | Inv, SMatrix m  ->  SMatrix(inv_matrix m)
     | EigVector, SMatrix m -> failwith "TODO"
-    | EigValue, SMatrix m  -> SMatrix[[SVar "lambda"];[fst (eigenv m); snd (eigenv m)]]
+    | EigValue, SMatrix m  -> SMatrix[[SVar "lambda"];
+                              [fst (eigenv m); snd (eigenv m)]]
     | RRef, SMatrix m      -> SMatrix(rref m)
     | _, _      -> failwith "Err Gen"
 

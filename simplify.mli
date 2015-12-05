@@ -67,8 +67,17 @@ val s_times: s_expr list -> s_expr
 *)
 val s_plus: s_expr list -> s_expr
 
+(*[log_function s] returns log(s) in a fully simplified form
+ * PRECONDITION: s must be fully simplified
+*)
 val log_function: s_expr -> s_expr
 
+(*[sin_function s] returns sin(s) in a fully simplified form
+ * PRECONDITION: s must be fully simplified
+*)
 val sin_function: s_expr -> s_expr
 
+(*[cos_function s] returns cos(s) in a fully simplified form
+ * PRECONDITION: s must be fully simplified
+*)
 val cos_function: s_expr -> s_expr
