@@ -154,7 +154,10 @@ let quadratic a b c =
   | _ -> failwith "This should not happen"
 
 let eigenv m =
+    if (is_square m) && (List.length m = 2) then
     let det = determinant m in
     quadratic (SFloat 1.)
     (times(SFloat (-1.),(plus(List.hd (List.hd m),List.nth (List.nth m 1) 1))))
     det
+    else 
+        failwith "Not 2x2"
