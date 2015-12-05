@@ -30,7 +30,6 @@ let parse_error _ =
 %token FOR
 %token IN
 %token ANS
-%token TAYLOR
 %token PRIME
 %token LOG
 %token DIV
@@ -54,7 +53,7 @@ let parse_error _ =
 %token ASS
 %token EOF
 
-%left SUBST FOR IN ASS TAYLOR
+%left SUBST FOR IN ASS
 %left PLUS MINUS
 %left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2 PRIME
 %left TRANS DET INV EV EVAL RREF
@@ -81,7 +80,6 @@ let parse_error _ =
 expr:
   | FLOAT DECIMAL FLOAT {Float (float_of_string ($1^"."^$3))}
   | FLOAT    {Float (float_of_string $1)}
-  | TAYLOR FLOAT expr DERIV expr   { Taylor (float_of_string $2, $5, $3)}
   | LPAREN expr RPAREN  %prec LPAREN
            { $2 }
   | expr POW expr    { BinOp (Pow, $1, $3) }
