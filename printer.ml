@@ -80,8 +80,9 @@ let rec format_string f e = Format.fprintf f "@{<misc>%s@}" e
 let clear_color _ = "\027[38;5;5m\027[0m"
 
 let set_color = function
-  | "misc"  -> "\027[38;5;5m\027[0m"  (* blue   *)
+  | "misc"  -> "\027[38;5;5m\027[0m"  (* white   *)
   |  "test"  -> "\027[38;5;3m"(* red    *)
+  | "yellow" -> "\027[38;5;3m"
   |   _     -> "\027[38;5;5m\027[0m"
 
 
