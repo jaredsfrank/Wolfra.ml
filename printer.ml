@@ -49,8 +49,10 @@ let rec format_expr f e =
     | STimes (-1.,[h]) -> Format.fprintf f "-%a" (bracket e) h
     | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" (print_frac) c (bracket e) x
     | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c (bracket e) h
+    | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" (bracket e) h (bracket e) (STimes (1.,e::t))
     | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" (bracket e) h (bracket e) (STimes (1.,e::t))
     | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" (print_frac) c (bracket e) h (bracket e) (STimes (1.,e::t))
+    | STimes (-1., h::t) -> Format.fprintf f "-%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
     | STimes (1., h::t) -> Format.fprintf f "%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
     | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c (bracket e) h (bracket e) (STimes (1.,t))
     | SPlus [] -> Format.fprintf f ""
@@ -108,8 +110,69 @@ __        __    _  __                       _
  \\ \\ /\\ / / _ \\| | |_| '__/ _` | | '_ ` _ \\| |
   \\ V  V / (_) | |  _| | | (_| |_| | | | | | |
    \\_/\\_/ \\___/|_|_| |_|  \\__,_(_)_| |_| |_|_|";
- print"\n\n\n\027[38;5;1;1mWelcome to Wolfra.ml!\nType help at any time for the help function. Type quit to exit the program.\n\nCopyright (c) 2015 Wolfra.ml Industries\nAll Rights Reserved\n\nThis product is protected by copyright and distributed under\nlicenses restricting copying, distribution and decompilation.\n\n"
+ print"\n\n\n\027[38;5;1;1m Welcome to Wolfra.ml!
+ Type help at any time for the help function. Type quit to exit the program.
 
+ Copyright (c) 2015 Wolfra.ml Industries
+ All Rights Reserved
+
+ This product is protected by copyright and distributed under
+ licenses restricting copying, distribution and decompilation.\n\n"
+
+
+let print_help () =
+  print
+  "\027[38;5;3m_   _      _         __  __                  
+  | | | | ___| |_ __   |  \\/  | ___ _ __  _   _ 
+  | |_| |/ _ \\ | '_ \\  | |\\/| |/ _ \\ '_ \\| | | |
+  |  _  |  __/ | |_) | | |  | |  __/ | | | |_| |
+  |_| |_|\\___|_| .__/  |_|  |_|\\___|_| |_|\\__,_|
+               |_|                              
+   " 
+
+let print_main_help () =
+   print "\027[38;5;1;1mThis is a symbolic computation program inspired by WolframAlpha
+
+   The program has 3 main features: 
+     *   Derivatives, Integration, Matrices
+
+     Type one of the following to learn more:
+      *  Basic Operation
+      *  Derivatives
+      *  Integrals
+      *  Matrices
+
+     OR press ENTER to return
+
+  "
+
+  let print_basic_help () =
+    print "\027[38;5;1;1mBasic operations
+
+    To return to the main help menu, type main
+    OR press ENTER to return
+    "
+
+  let print_deriv_help () = 
+    print "\027[38;5;1;1mDerivatives
+
+    To return to the main help menu, type main
+    OR press ENTER to return
+    "
+
+  let print_integ_help () =
+    print "\027[38;5;1;1mIntegrals
+
+    To return to the main help menu, type main
+    OR press ENTER to return
+    "
+
+  let print_matr_help () =
+    print "\027[38;5;1;1mMatrices
+
+    To return to the main help menu, type main
+    OR press ENTER to return
+    "
 
 
 

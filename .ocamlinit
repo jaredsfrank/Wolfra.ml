@@ -16,6 +16,7 @@
 #load "parser.d.cmo";;
 #load "lexer.d.cmo";;
 #load "parse.d.cmo";;
+#load "fractions.d.cmo";;
 #load "printer.d.cmo";;
 #load "simplify.d.cmo";;
 #load "matrix.d.cmo";;
@@ -26,6 +27,7 @@
 (** For convenience, we open a bunch of modules *)
 open Ast
 open Printer
+open Fractions
 open Simplify
 open Eval
 open Parse

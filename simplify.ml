@@ -114,8 +114,10 @@ and times (e1,e2) =
   | _, STimes (c,l)         -> unbox(STimes (c,times_help l e1))
   | s1, s2                -> unbox(match compare_mult s1 s2 with Some e -> e | None -> STimes (1.,[s1;s2]))
 
-and s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
-and s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
+let s_times l = unbox(List.fold_left (fun a b -> times (a,b)) (STimes (1.,[])) l)
+let s_plus l = unbox(List.fold_left (fun a b -> plus (a,b)) (SPlus []) l)
+
+let divide (a,b) = times(a, pow(b, SFloat (-1.))) 
 
 let rec log_function = function
   | SFloat a        -> SFloat (log a)

@@ -45,7 +45,7 @@ let rec bin_op op s1 s2 =
     | Divide,SMatrix _,_         -> matrix_times (s1, pow(s2, SFloat (-1.)))
     | Divide,_,_                 -> times (s1, pow(s2, SFloat (-1.)))
     | Deriv,_,_                  -> let (e1, l) = (deriv s1 s2) in e1
-    | Integrate,_,_              -> integrate s1 s2
+    | Integrate,_,_              -> plus(integrate s1 s2, SVar "C")
     | Ass, _, _                  -> failwith "Improper Assignment"
 
 
@@ -55,7 +55,7 @@ let un_op op s =
     | Neg, _       -> times (SFloat (-1.), s)
     | Sin, _       -> sin_function s
     | Cos, _       -> cos_function s
-    | Tan, _       -> times(SSin s, pow(SCos s, SFloat (-1.)))
+    | Tan, _       -> divide(sin_function s, cos_function s)
     | Log, _       -> log_function s
     | Trans, SMatrix m     -> SMatrix(trans_matrix m)
     | Det, SMatrix m when is_square m -> determinant m

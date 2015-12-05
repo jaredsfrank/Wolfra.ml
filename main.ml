@@ -11,6 +11,7 @@ let rec main () =
         match result with
         | "quit" -> print "done"; ()
         | "clear" -> env := []; print "";main()
+        | "help" -> let _ = Sys.command "clear" in print_help (); print_main_help (); help_menu ()
         | s -> let e =  (eval (parse_expr s)) in
                 print_expr e; 
                 prev := e; main()
@@ -23,6 +24,21 @@ let rec main () =
     | Failure "Err Square" -> print "The matrix must be square"; main ()
     | Failure "No complex solutions" -> print "Complex solutions are not supported"; main ()
     | _  -> print "Please enter in a proper expression"; main()
+and help_menu () =
+    Printf.printf "\n>> ";
+    let input = String.lowercase(read_line ()) in
+    let _ = Sys.command "clear" in
+    print_help (); 
+    match input with
+    | "main" -> print_main_help (); help_menu ();
+    | "basic operation" -> print_basic_help ();  help_menu ()
+    | "derivatives" -> print_deriv_help (); help_menu ()
+    | "integrals" -> print_integ_help (); help_menu ()
+    | "matrices" -> print_matr_help  (); help_menu ()
+    | "" -> let _ = Sys.command "clear" in print_intro (); main()
+    | _ -> print_main_help ();help_menu ()
+
+
 
 let () = let _ = Sys.command "clear" in print_intro (); main ()
 

@@ -49,9 +49,19 @@ val pow: s_expr * s_expr -> s_expr
  in a fully simplified form
  * PRECONDITION: All elements of l must be fully simplified
 *)
+
+(*[divide (s1, s2)] returns s1/s2 in a fully simplified form
+ * PRECONDITION: s1 and s2 must be fully simplified
+*)
+val divide: s_expr * s_expr -> s_expr
+
+(*[s_times l] returns s1*s2*...sn for all elements in l
+ in a fully simplified form
+ * PRECONDITION: All elements of l must be fully simplified
+*)
 val s_times: s_expr list -> s_expr
 
-(*[times l] returns s1+s2+... for all elements in l
+(*[s_plus l] returns s1+s2+...sn for all elements in l
  in a fully simplified form
  * PRECONDITION: All elements of l must be fully simplified
 *)
