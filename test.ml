@@ -19,7 +19,11 @@ TEST "Basic times" = evaluate "x*y" = "x*y"
 
 (*NOTE:THIS IS ACTUALLY A GREAT WAY TO TEST.
 TESTING PROPERTIES JUST REQUIRES THAT THE TWO EQUIVALENT EXPRESSIONS EVLAUATE TO THE SAME VALUE*)
+TEST "Add Zero" = evaluate "x+0" = evaluate "x"
+TEST "Mult Zero" = evaluate "x*0" = evaluate "0"
+TEST "Mult One" = evaluate "x*1" = evaluate "x"
 TEST "Times pows" = evaluate "x^(-5)*x^(2)" = evaluate "x^(-3)"
+TEST "Adding combinable expressions" = evaluate "2*x+x*3" = evaluate "5*x"
 TEST "FOLDING" =  evaluate "(z+w)*(x+y)" = evaluate "x*w+ y*w + x*z + y*z"
 TEST "Distributive" = evaluate "2*(x+y)" = evaluate "2*x+2*y"
 TEST "Log of E" = evaluate "log(e^x)" = evaluate "x"
