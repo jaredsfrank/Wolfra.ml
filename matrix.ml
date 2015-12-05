@@ -67,10 +67,10 @@ let dot_matrices m1 m2 =
   with _ -> failwith "Err Matrix Mult"
 
 
-let matrix_times (e1,e2) = 
+let rec matrix_times (e1,e2) = 
   match (e1, e2) with
   | SFloat _, SMatrix m    -> SMatrix (List.map (fun l -> List.map (fun x -> times (x,e1)) l) m)
-  | SMatrix m, SFloat _    -> times (e2, SMatrix m)
+  | SMatrix m, SFloat _    -> matrix_times (e2, e1)
   | SMatrix m1, SMatrix m2 -> SMatrix (dot_matrices m1 (trans_matrix m2))
   | _, _                   -> failwith "uh oh"
 
