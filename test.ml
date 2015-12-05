@@ -27,12 +27,15 @@ TEST "Zero to power" = evaluate "0^x" = evaluate "0"
 TEST "One to power" = evaluate "1^x" = evaluate "1"
 TEST "Power of one" = evaluate "x^1" = evaluate "x"
 TEST "Power of zero" = evaluate "x^0" = evaluate "1"
+TEST "Power of floats" = evaluate "3^4" = evaluate "81"
+(*TEST "power of summed terms" = evaluate "(x+y)^3" = evaluate "(x^3) + (3*(x^2)*y) + (3*x*(y^2)) + (y^3)"*)
 TEST "Times pows" = evaluate "x^(-5)*x^(2)" = evaluate "x^(-3)"
 TEST "Adding combinable expressions" = evaluate "2*x+x*3" = evaluate "5*x"
 TEST "FOLDING" =  evaluate "(z+w)*(x+y)" = evaluate "x*w+ y*w + x*z + y*z"
 TEST "Distributive" = evaluate "2*(x+y)" = evaluate "2*x+2*y"
 TEST "Log of E" = evaluate "log(e^x)" = evaluate "x"
 TEST "E pow of Log" = evaluate "e^log(x)" = evaluate "x"
+TEST "E pow of Log2" = evaluate "e^(2*log(x))" = evaluate "x^2"
 TEST "" = true
 TEST "" = true
 
