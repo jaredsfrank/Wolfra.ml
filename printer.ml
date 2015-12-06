@@ -209,7 +209,7 @@ let print_main_help () =
 
   let print_integ_help () =
     print_form "@{<yellow> INTEGRALS@}
-    {@<red>
+    @{<red>
     Integrals are currently in beta...not fully functional.
     Fully supported integrals:
       (where [c] represents any non-variable expr
@@ -233,7 +233,7 @@ let print_main_help () =
     OR press ENTER to return@}"
 
   let print_matr_help () =
-    print_form "{@<yellow> MATRICES@}
+    print_form "@{<yellow> MATRICES@}
     @{<red>
     Matrices are denoted in the following way:
       Columns are separated by commaas. Rows are separated by semicolons
