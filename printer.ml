@@ -78,14 +78,16 @@ let rec format_expr f e =
 
 
 
-let rec format_string f e = Format.fprintf f "@{<misc>%s@}" e
-
+let format_string f e = Format.fprintf f "@{<grey>%s@}" e
+let format_string2 f e = Format.fprintf f e
 
 let clear_color _ = "\027[38;5;5m\027[0m"
 
 let set_color = function
-  | "misc"  -> "\027[38;5;5m\027[0m"  (* blue   *)
-  |  "test"  -> "\027[38;5;3m"(* red    *)
+  | "grey"  -> "\027[38;5;5m\027[0m"  (* blue   *)
+  |  "yellow"  -> "\027[38;5;3m"(* yellow    *)
+  | "red"   -> "\027[38;5;1;1m" (*red*)
+
   |   _     -> "\027[38;5;5m\027[0m"
 
 (*The following two functions are mostly taken directly from A4*)
@@ -102,42 +104,44 @@ let make_printer formatter e =
   Format.set_formatter_tag_functions print_tags;
   Format.set_tags true;
   Format.printf "@<0>%s" (clear_color ());
-  Format.printf "   @{<test>%a@}@{<misc>@. @}" formatter e
+  Format.printf "   @{<yellow>%a@}@{<grey>@. @}" formatter e
 
 let print_expr     = make_printer format_expr
 let print          = make_printer format_string
+let print_form     = make_printer format_string2
 
 
 let print_intro () = 
- print "\027[38;5;3m
-__        __    _  __                       _ 
-\\ \\      / /__ | |/ _|_ __ __ _   _ __ ___ | |
- \\ \\ /\\ / / _ \\| | |_| '__/ _` | | '_ ` _ \\| |
-  \\ V  V / (_) | |  _| | | (_| |_| | | | | | |
-   \\_/\\_/ \\___/|_|_| |_|  \\__,_(_)_| |_| |_|_|";
- print"\n\n\n\027[38;5;1;1m Welcome to Wolfra.ml!
+ print_form "@{<yellow>
+          __        __    _  __                       _ 
+          \\ \\      / /__ | |/ _|_ __ __ _   _ __ ___ | |
+           \\ \\ /\\ / / _ \\| | |_| '__/ _` | | '_ ` _ \\| |
+            \\ V  V / (_) | |  _| | | (_| |_| | | | | | |
+             \\_/\\_/ \\___/|_|_| |_|  \\__,_(_)_| |_| |_|_|@}";
+ print_form "\n\n\n@{<red> Welcome to Wolfra.ml!
  Type help at any time for the help function. Type quit to exit the program.
 
  Copyright (c) 2015 Wolfra.ml Industries
  All Rights Reserved
 
  This product is protected by copyright and distributed under
- licenses restricting copying, distribution and decompilation.\n\n"
+ licenses restricting copying, distribution and decompilation.@}"
 
 
 let print_help () =
-  print
-  "\027[38;5;3m_   _      _         __  __                  
+  print_form
+  "@{<yellow>
+   _   _      _         __  __                  
   | | | | ___| |_ __   |  \\/  | ___ _ __  _   _ 
   | |_| |/ _ \\ | '_ \\  | |\\/| |/ _ \\ '_ \\| | | |
   |  _  |  __/ | |_) | | |  | |  __/ | | | |_| |
   |_| |_|\\___|_| .__/  |_|  |_|\\___|_| |_|\\__,_|
                |_|                              
-   "
+   @}"
 
 let print_main_help () =
-   print 
-   "\027[38;5;1;1mThis is a Symbolic Computation System inspired by WolframAlpha
+   print_form
+   "@{<red>This is a Symbolic Computation System inspired by WolframAlpha
    The program has 3 main features: 
      *   Derivatives, Integration, Matrices
 
@@ -151,13 +155,13 @@ let print_main_help () =
                  Enter  'integrate x^2 wrt x' to see some integration magic
                  Enter  '[a,b;c,d]+[e,f;g,h]' to see some matrix magic
 
-   press ENTER to return
+   press ENTER to return@}
   "
 
 
   let print_basic_help () =
-    print "\027[38;5;3m BASIC OPERATION
-    \027[38;5;1;1m
+    print_form "@{<yellow> BASIC OPERATION@}
+    @{<red>
     Variables: Any combination of adjacent letters
     Reserved Variables: pi, e, c, [any word that is used as a command]
     Assignment: Typing [var] = [expr] assigns that expression to the variable
@@ -177,11 +181,11 @@ let print_main_help () =
     * Previous Ans:  5x [ENTER] Ans + x => 6x
    
     To return to the main help menu, type MAIN
-    OR press ENTER to return"
+    OR press ENTER to return@}"
 
   let print_deriv_help () = 
-    print "\027[38;5;3m DERIVATIVES
-    \027[38;5;1;1m
+    print_form "@{<yellow> DERIVATIVES@}
+    @{<red>
     Derivatives for all types of expressions are fully functional
 
     There are 3 notations for denoting a derivative:
@@ -201,11 +205,11 @@ let print_main_help () =
 
 
     To return to the main help menu, type MAIN
-    OR press ENTER to return"
+    OR press ENTER to return@}"
 
   let print_integ_help () =
-    print "\027[38;5;3m DERIVATIVES
-    \027[38;5;1;1m
+    print_form "@{<yellow> INTEGRALS@}
+    {@<red>
     Integrals are currently in beta...not fully functional.
     Fully supported integrals:
       (where [c] represents any non-variable expr
@@ -226,11 +230,11 @@ let print_main_help () =
         f = integrate x^3 wrt x [ENTER] (sub 5 for x in f) - (sub 3 for x in f)
 
     To return to the main help menu, type MAIN
-    OR press ENTER to return"
+    OR press ENTER to return@}"
 
   let print_matr_help () =
-    print "\027[38;5;3m MATRICES
-    \027[38;5;1;1m
+    print_form "{@<yellow> MATRICES@}
+    @{<red>
     Matrices are denoted in the following way:
       Columns are separated by commaas. Rows are separated by semicolons
       EX: To express [1 3], write [1,3;5,6] 
@@ -251,7 +255,7 @@ let print_main_help () =
 
 
     To return to the main help menu, type MAIN
-    OR press ENTER to return"
+    OR press ENTER to return@}"
 
 
 
