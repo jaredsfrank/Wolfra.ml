@@ -45,9 +45,10 @@ TEST "E pow of Log2" = evaluate "e^(2*log(x))" = evaluate "x^2"
 TEST "Sin of PI" = evaluate "sin(pi)" = evaluate "0"
 TEST "Cos of PI" = evaluate "cos(pi)" = evaluate "-1"
 TEST "Cos of zero" = evaluate "cos(0)" = evaluate "1"
-TEST "" = true
-TEST "" = true
-TEST "" = true
+TEST "Cos of half PI" = evaluate "cos(0.5*pi)" = evaluate "0"
+TEST "Cos of an even factor of PI" = evaluate "cos(4*pi)" = evaluate "1"
+TEST "Cos of an odd factor of PI" = evaluate "cos(3*pi)" = evaluate "-1"
+
 
 
 TEST "Distributive" =
