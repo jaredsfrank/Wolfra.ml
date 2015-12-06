@@ -48,6 +48,9 @@ TEST "Cos of zero" = evaluate "cos(0)" = evaluate "1"
 TEST "Cos of half PI" = evaluate "cos(0.5*pi)" = evaluate "0"
 TEST "Cos of an even factor of PI" = evaluate "cos(4*pi)" = evaluate "1"
 TEST "Cos of an odd factor of PI" = evaluate "cos(3*pi)" = evaluate "-1"
+TEST "Sin of half PI1" = evaluate "sin(0.5*pi)" = evaluate "1"
+TEST "Sin of half PI2" = evaluate "sin(1.5*pi)" = evaluate "-1"
+TEST "Sin of multiple pi" = evaluate "sin(7*pi)" = evaluate "0"
 
 
 
