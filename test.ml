@@ -39,11 +39,15 @@ TEST "Adding combinable expressions" = evaluate "2*x+x*3" = evaluate "5*x"
 TEST "FOLDING" =  evaluate "(z+w)*(x+y)" = evaluate "x*w+ y*w + x*z + y*z"
 TEST "Distributive" = evaluate "2*(x+y)" = evaluate "2*x+2*y"
 TEST "Log of E" = evaluate "log(e^x)" = evaluate "x"
+TEST "Log of power" = evaluate "log(x^y)" = evaluate "y*log(x)"
 TEST "E pow of Log" = evaluate "e^log(x)" = evaluate "x"
 TEST "E pow of Log2" = evaluate "e^(2*log(x))" = evaluate "x^2"
+TEST "Sin of PI" = evaluate "sin(pi)" = evaluate "0"
+TEST "Cos of PI" = evaluate "cos(pi)" = evaluate "-1"
+TEST "Cos of zero" = evaluate "cos(0)" = evaluate "1"
 TEST "" = true
 TEST "" = true
-
+TEST "" = true
 
 
 TEST "Distributive" =
@@ -58,3 +62,5 @@ TEST "Distributive 2" =
 TEST "Derivative Simple" = evaluate "derive x^2 wrt x" = "2x"
 TEST "Derivative Exp" = evaluate "derive x^y wrt x" = "y*(x)^(y-1)"
 TEST "Derivative Times" = evaluate "derive x*sin(x) wrt x" = "sin(x)+x*cos(x)"
+
+TEST "Integration Simple" = evaluate "integrate 2*x^4 wrt x" = "(2/5)(x)^(5)+C"
