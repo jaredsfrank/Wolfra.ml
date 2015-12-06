@@ -73,6 +73,13 @@ TEST "Derivative Cos" = evaluate "derive cos(x) wrt x" = evaluate "-sin(x)"
 TEST "Derivative ln(x)" = evaluate "derive log(x) wrt x" = evaluate "1/x"
 
 TEST "Integration Simple" = evaluate "integrate 2*x^4 wrt x" = "(2/5)(x)^(5)+C"
+TEST "Integral derivative" = evaluate "integrate derive x*cos(x) wrt x wrt x"
+                                = "x*cos(x)+C"
+TEST "Integral times" = evaluate "integrate x*cos(x) wrt x" = "x*sin(x)+cos(x)+C"
+TEST "Integral pow n" = evaluate "integrate x^n wrt x" = "(x)^(1+n)/(1+n)+C"
+TEST "Integral Plus" = evaluate "integrate x+y wrt x" = "(1/2)(x)^(2)+y*x+C"
+TEST "Integral e^cx" = evaluate "integrate e^(5*x) wrt x" = "(1/5)(e)^(5x)+C"
+TEST "Integral 1/(2x)" = evaluate "integrate 1/(2x) wrt x" = "(1/2)ln(x)+C"
 
 TEST "Matrix Simple" = evaluate "[1,a;pi,e]" = "[1,a;pi,e]"
 TEST "Matrix Eval all" = evaluate "[1+1,2+2;a+a,4/b]" = evaluate "[2,4;2a,4/b]"
