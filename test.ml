@@ -5,8 +5,10 @@ open Printer
 open Assertions
 
 let lists_equal l1 l2 =
-    let b1 = List.fold_left (fun accum x -> accum &&  List.exists (fun y -> y = x) l2) true l1 in
-    let b2 = List.fold_left (fun accum x -> accum && List.exists (fun y -> y = x) l1) true l2 in
+    let b1 = List.fold_left (fun accum x -> accum &&
+                              List.exists (fun y -> y = x) l2) true l1 in
+    let b2 = List.fold_left (fun accum x -> accum &&
+                              List.exists (fun y -> y = x) l1) true l2 in
     b1 && b2 && (List.length l1 = List.length l2)
 
 let evaluate s = string_of_expr(eval(parse_expr s))
@@ -18,7 +20,8 @@ TEST "times Const" = evaluate "5x" = "5x"
 TEST "Basic times" = evaluate "x*y" = "x*y"
 
 (*NOTE:THIS IS ACTUALLY A GREAT WAY TO TEST.
-TESTING PROPERTIES JUST REQUIRES THAT THE TWO EQUIVALENT EXPRESSIONS EVLAUATE TO THE SAME VALUE*)
+TESTING PROPERTIES JUST REQUIRES THAT THE TWO
+EQUIVALENT EXPRESSIONS EVLAUATE TO THE SAME VALUE*)
 TEST "Add Zero" = evaluate "x+0" = evaluate "x"
 TEST "Mult Zero" = evaluate "x*0" = evaluate "0"
 TEST "Mult One" = evaluate "x*1" = evaluate "x"
@@ -56,7 +59,8 @@ TEST "Sin of multiple pi" = evaluate "sin(7*pi)" = evaluate "0"
 
 TEST "Distributive" =
     match eval_ast "(x+1)^2" with
-    | SPlus l when lists_equal l [STimes(2.,[SVar "x"]);SFloat 1.; SPow(SVar "x",SFloat 2.)] -> true
+    | SPlus l when lists_equal l [STimes(2.,[SVar "x"]);
+                                  SFloat 1.; SPow(SVar "x",SFloat 2.)] -> true
     | _ -> false
 
 TEST "Distributive 2" =
