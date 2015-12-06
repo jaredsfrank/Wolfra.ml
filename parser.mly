@@ -46,7 +46,6 @@ let parse_error _ =
 %token LBRACKET RBRACKET
 %token TRANS
 %token DET
-%token EV
 %token EVAL
 %token RREF
 %token INV
@@ -56,7 +55,7 @@ let parse_error _ =
 %left SUBST FOR IN ASS
 %left PLUS MINUS
 %left MULT DIV COS SIN TAN LOG DERIV DERIVE DERIV2 DERIVE2 PRIME
-%left TRANS DET INV EV EVAL RREF
+%left TRANS DET INV EVAL RREF
 %right POW DECIMAL
 %nonassoc VAR LBRACE FLOAT LPAREN PI E  COMMA SEMI LBRACKET
 
@@ -108,7 +107,6 @@ expr:
   | TRANS expr {UnOp (Trans, $2)}
   | DET expr {UnOp (Det, $2)}
   | INV expr {UnOp (Inv, $2)}
-  | EV expr {UnOp (EigVector, $2)}
   | EVAL expr {UnOp (EigValue, $2)}
   | RREF expr {UnOp (RRef, $2)}
   | TAN LPAREN expr RPAREN  {UnOp(Tan, $3)}

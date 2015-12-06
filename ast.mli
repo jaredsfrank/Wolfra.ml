@@ -11,7 +11,7 @@ type binop =
 (*unary operations*)
 type unop = 
     | Neg | Sin | Cos | Tan | Log
-    | Trans | Det | Inv | EigVector | EigValue | RRef 
+    | Trans | Det | Inv | EigValue | RRef 
 
 (*Type of mathematical expressions
  * Float 8.5 represents 8.5

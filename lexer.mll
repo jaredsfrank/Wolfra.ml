@@ -52,7 +52,6 @@ rule token = parse
   | "transpose"  {TRANS}
   | "det"      { DET }
   | "inverse"     { INV }
-  | "eigenvector" {EV}
   | "eigenvalue" {EVAL}
   | "rref" {RREF}
   | letters as id { VAR id }
