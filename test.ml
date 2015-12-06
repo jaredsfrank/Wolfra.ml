@@ -70,5 +70,8 @@ TEST "Distributive 2" =
 TEST "Derivative Simple" = evaluate "derive x^2 wrt x" = "2x"
 TEST "Derivative Exp" = evaluate "derive x^y wrt x" = "y*(x)^(y-1)"
 TEST "Derivative Times" = evaluate "derive x*sin(x) wrt x" = "sin(x)+x*cos(x)"
+TEST "Derivative Sin" = evaluate "derive sin(x) wrt x" = "cos(x)"
+TEST "Derivative Cos" = evaluate "derive cos(x) wrt x" = evaluate "-sin(x)"
+TEST "Derivative ln(x)" = evaluate "derive log(x) wrt x" = evaluate "1/x"
 
 TEST "Integration Simple" = evaluate "integrate 2*x^4 wrt x" = "(2/5)(x)^(5)+C"
