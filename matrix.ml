@@ -64,7 +64,7 @@ let dot l1 l2 = List.fold_left2 (fun accum a b -> plus(accum,times (a,b))) (SFlo
 
 let dot_matrices m1 m2 = 
   try List.map (fun l -> List.map (dot l) m1) m2
-  with _ -> failwith "Err Matrix Mult"
+  with _ -> failwith "Error: These matrices do not multiply"
 
 
 let rec matrix_times (e1,e2) = 
@@ -72,13 +72,13 @@ let rec matrix_times (e1,e2) =
   | SFloat _, SMatrix m    -> SMatrix (List.map (fun l -> List.map (fun x -> times (x,e1)) l) m)
   | SMatrix m, SFloat _    -> matrix_times (e2, e1)
   | SMatrix m1, SMatrix m2 -> SMatrix (trans_matrix(dot_matrices m1 (trans_matrix m2)))
-  | _, _                   -> failwith "uh oh"
+  | _, _                   -> failwith "Error"
 
 and matrix_plus = function
   | SMatrix m, SFloat f -> SMatrix (List.map (fun l -> List.map (fun x -> plus (x,SFloat f)) l) m)
   | SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
   | SMatrix m, SMatrix n when check_dimension m n->  SMatrix(List.map2 (fun l1 l2 -> List.map2 (fun a b -> plus(a,b)) l1 l2) m n)
-  | _,_ -> failwith "uh oh"
+  | _,_ -> failwith "Error"
 
 (*Swaps rows i and j of a matrix. if i=j then the matrix stays the same*)
 let swap_rows m i j =
@@ -137,7 +137,7 @@ let inv_matrix m =
     (match m, n with
     | [], [] -> []
     | h1::t1, h2::t2 -> (h1@h2)::helper1 t1 t2
-    | _, _ -> failwith "Err Square") in
+    | _, _ -> failwith "Error: This matrix must be square") in
     let reduced = rref(helper1 m ident) in
     let rec helper2 red n =
     (match red with
@@ -148,10 +148,10 @@ let inv_matrix m =
 let quadratic a b c =
   let discrim = plus(pow(b,SFloat 2.),times(SFloat (-1.),times(SFloat 4.,times(a,c)))) in
   match discrim with
-  | SFloat i -> if i < 0. then failwith "No complex solutions"
+  | SFloat i -> if i < 0. then failwith "Error: Wolfra.ml does not support complex solutions"
                 else (times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),pow(discrim,SFloat (0.5)))) ,
                       times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),times(SFloat (-1.),pow(discrim,SFloat (0.5))))))
-  | _ -> failwith "This should not happen"
+  | _ -> failwith "Error"
 
 let eigenv m =
     if (is_square m) && (List.length m = 2) then
@@ -160,4 +160,4 @@ let eigenv m =
     (times(SFloat (-1.),(plus(List.hd (List.hd m),List.nth (List.nth m 1) 1))))
     det
     else 
-        failwith "Not 2x2"
+        failwith "Error: Wolfra.ml only supports eigenvalues of 2x2 matrices"

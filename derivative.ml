@@ -18,7 +18,8 @@ let rec deriv s1 s2 =
   | SSin x, SVar _          -> s_times [SCos x; deriv x s2]
   | SCos x, SVar _          ->  s_times [SFloat (-1.); SSin x; deriv x s2]
   | SLog x, SVar _          ->  s_times [pow (x, SFloat (-1.)); deriv x s2]
-  | _, _                    -> failwith "This shouldn't happen"
+  | _, _                    -> failwith ("Error: Please derive with respect "^
+                                        "to a variable")
 
 let rec multi_deriv n s1 s2 =
   match n with

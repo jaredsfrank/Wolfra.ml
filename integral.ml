@@ -1,7 +1,19 @@
 open Simplify
 open Derivative
 
-let is_constant s = true (*JUST A PLACEHOLDER. STILL NEEDS TO BE DONE*)
+let rec is_constant x' = function
+    | SFloat f -> true
+    | SVar x when x = x' -> false
+    | SVar x  -> true
+    | STimes (c, l) -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
+    | SPlus l -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
+    | SPow (e1, e2) -> is_constant x' e1 && is_constant x' e2
+    | SMatrix l -> List.fold_left (fun accum l' -> accum && List.fold_left (fun accum a -> accum && is_constant x' a) true l') true l
+    | SSin e -> is_constant x' e
+    | SCos e -> is_constant x' e
+    | SLog e -> is_constant x' e
+    | SE -> true
+    | SPI -> true
 
 let sin_integration x x' =
  match x with
@@ -22,7 +34,7 @@ let sin_integration x x' =
                                            SCos(SPlus(SVar v::[SFloat f])))
  | SPlus(SVar v::[SFloat f])
  | SPlus(SFloat f::[SVar v]) when v <> x'-> times(SSin x, SVar x')
- | _ -> failwith "TODO"
+ | _ -> failwith "Error: Wolfra.ml does not support that type of integration"
 
 let cos_integration x x' =
  match x with
@@ -40,7 +52,7 @@ let cos_integration x x' =
  | SPlus(SFloat f::[SVar v]) when v = x'-> SSin(SPlus(SVar v::[SFloat f]))
  | SPlus(SVar v::[SFloat f])
  | SPlus(SFloat f::[SVar v]) when v <> x'-> times(SCos x, SVar x')
- | _ -> failwith "TODO"
+ | _ -> failwith "Error: Wolfra.ml does not support that type of integration"
 
 let log_integration x x' =
  match x with
@@ -54,7 +66,7 @@ let log_integration x x' =
  | SPlus(SVar v::[SFloat f])
  | SPlus(SFloat f::[SVar v]) when v = x' -> plus(times(x, SLog x),
                                             times(SFloat (-1.),SVar x'))
- | _ -> failwith "TODO"
+ | _ -> failwith "Error: Wolfra.ml does not support that type of integration"
 
 let rec integrate s1 s2 =
  match s1, s2 with
@@ -70,9 +82,9 @@ let rec integrate s1 s2 =
  | SPlus (h::t), SVar _  -> s_plus [integrate h s2; integrate (SPlus t) s2]
  | SPow (SVar x, SFloat (-1.)), SVar x' when x = x' -> SLog(SVar x)
  | SPow (SVar x, g), SVar x'
-    when x = x' && is_constant g -> divide(pow(SVar x, plus(SFloat 1., g)),
+    when x = x' && is_constant x' g -> divide(pow(SVar x, plus(SFloat 1., g)),
                                     plus(SFloat 1., g))
- | SPow (SVar x, g), SVar x' when is_constant g -> times(s1, SVar x')
+ | SPow (SVar x, g), SVar x' when is_constant x' g -> times(s1, SVar x')
  | SPow (SE, SVar x), SVar x' when x = x' -> pow(SE, SVar x)
  | SPow (SE, STimes(c,[SVar x])), SVar x'
     when x = x' ->times(SFloat (1./.c), SPow(SE, STimes(c,[SVar x])))
@@ -88,8 +100,10 @@ let rec integrate s1 s2 =
  | SLog x, SVar x'       -> log_integration x x'
  | SPI, SVar _           -> times(SPI, s2)
  | SE, SVar _            -> times(SE, s2)
- | _, _                  -> failwith "This shouldn't happen"
-
+ | _, SVar _             -> failwith ("Error: Wolfra.ml does not support that"^
+                            " type of integration")
+ | _, _                  -> failwith ("Error: Please Integrate with respect "^
+                            " to a variable")
 and by_parts u dv s2 =
     let du = deriv u s2 in let v = integrate dv s2 in
     plus(times(u,v),integrate (s_times[SFloat (-1.);v; du]) s2)

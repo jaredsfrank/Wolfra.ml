@@ -68,7 +68,7 @@ and plus = function
 
 
 and pow = function
-  | SFloat 0., SFloat a when a < 0. -> failwith "Division by 0"
+  | SFloat 0., SFloat a when a < 0. -> failwith "Error: Division by 0"
   | SFloat 0., _                    -> SFloat 0.
   | SFloat 1., _                    -> SFloat 1.
   | s, SFloat 1.                    -> s
