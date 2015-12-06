@@ -9,7 +9,7 @@ let rec main () =
     let result = read_line () in
     try
         match result with
-        | "quit" -> print "done"; ()
+        | "quit" -> print "Done. Press enter to leave"; ()
         | "clear" -> env := []; print "";main()
         | "help" -> let _ = Sys.command "clear" in print_help (); print_main_help (); help_menu ()
         | s -> let e =  (eval (parse_expr s)) in

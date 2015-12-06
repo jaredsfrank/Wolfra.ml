@@ -1,8 +1,5 @@
 open Ast
 
-
-
-
 type s_expr =
     | SFloat of float
     | SVar of var

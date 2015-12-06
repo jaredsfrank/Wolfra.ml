@@ -1,8 +1,6 @@
 open Ast
 
 
-
-
 (*Type of mathematical expressions
  * SFloat 8.5 represents 8.5
  * SVar "x" represents a variable x that is involved in calculus

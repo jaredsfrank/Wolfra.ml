@@ -1,18 +1,5 @@
 open Simplify
 open Fractions
-(*This code is heavily inspired by the printer from A4 OCalf*)
-
-type deriv_print = 
-| PNone
-| PConst of s_expr * s_expr
-| PVar of s_expr * s_expr
-| PProd of s_expr * s_expr
-| PPlus of s_expr * s_expr
-| PPow of s_expr * s_expr 
-| PSin of s_expr * s_expr 
-| PCos of s_expr * s_expr
-| PLog of s_expr * s_expr
-
 
 let string_of_floats f =
     let s = string_of_float f in
@@ -21,13 +8,10 @@ let string_of_floats f =
 
 
 let rec format_expr f e = 
-    let bracket parent f e =
-        Format.fprintf f "%a" format_expr e
-    in
     let rec print_list f = function
         | [] -> Format.fprintf f ""
-        | [h] -> Format.fprintf f "%a" (bracket e) h
-        | h::t -> Format.fprintf f "%a,%a" (bracket e) h (print_list) t
+        | [h] -> Format.fprintf f "%a" format_expr h
+        | h::t -> Format.fprintf f "%a,%a" format_expr h (print_list) t
     in
     let rec print_list_list f = function
         | [] -> Format.fprintf f ""
@@ -45,30 +29,30 @@ let rec format_expr f e =
     | SFloat n -> print_frac f n
     | SVar x -> Format.fprintf f "%s" x
     | STimes (c,[]) -> Format.fprintf f "%a" (print_frac) c
-    | STimes (1.,[h]) -> Format.fprintf f "%a" (bracket e) h
-    | STimes (-1.,[h]) -> Format.fprintf f "-%a" (bracket e) h
-    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" (print_frac) c (bracket e) x
-    | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c (bracket e) h
-    | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" (bracket e) h (bracket e) (STimes (1.,e::t))
-    | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" (bracket e) h (bracket e) (STimes (1.,e::t))
-    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" (print_frac) c (bracket e) h (bracket e) (STimes (1.,e::t))
-    | STimes (-1., h::t) -> Format.fprintf f "-%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
-    | STimes (1., h::t) -> Format.fprintf f "%a*%a" (bracket e) h (bracket e) (STimes (1.,t))
-    | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c (bracket e) h (bracket e) (STimes (1.,t))
+    | STimes (1.,[h]) -> Format.fprintf f "%a" format_expr h
+    | STimes (-1.,[h]) -> Format.fprintf f "-%a" format_expr h
+    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" (print_frac) c format_expr x
+    | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c format_expr h
+    | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" format_expr h format_expr (STimes (1.,e::t))
+    | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" format_expr h format_expr (STimes (1.,e::t))
+    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" (print_frac) c format_expr h format_expr (STimes (1.,e::t))
+    | STimes (-1., h::t) -> Format.fprintf f "-%a*%a" format_expr h format_expr (STimes (1.,t))
+    | STimes (1., h::t) -> Format.fprintf f "%a*%a" format_expr h format_expr (STimes (1.,t))
+    | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c format_expr h format_expr (STimes (1.,t))
     | SPlus [] -> Format.fprintf f ""
-    | SPlus [h] -> Format.fprintf f "%a" (bracket e) h
+    | SPlus [h] -> Format.fprintf f "%a" format_expr h
     | SPlus (h1::h2::t) -> (match h2 with 
-                              | SFloat x when x<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus ((SFloat (-1.*.x))::t))
-                              | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a" (bracket e) h1 (bracket e) (SPlus (STimes (-1.*.c,x)::t))
-                              | _ -> Format.fprintf f "%a+%a" (bracket e) h1 (bracket e) (SPlus( h2::t)))
-    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "(1/%a)" (bracket e) s1
-    | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" (bracket e) s1 (bracket e) s2
+                              | SFloat x when x<0. -> Format.fprintf f "%a-%a" format_expr h1 format_expr (SPlus ((SFloat (-1.*.x))::t))
+                              | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a" format_expr h1 format_expr (SPlus (STimes (-1.*.c,x)::t))
+                              | _ -> Format.fprintf f "%a+%a" format_expr h1 format_expr (SPlus( h2::t)))
+    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "(1/%a)" format_expr s1
+    | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" format_expr s1 format_expr s2
     | SMatrix []  -> Format.fprintf f ""
     | SMatrix [h] -> Format.fprintf f "[%a]" print_list h
     | SMatrix (h::t) -> Format.fprintf f "[%a;%a]" print_list h print_list_list t
-    | SSin s ->  Format.fprintf f "sin(%a)" (bracket e) s
-    | SCos s ->  Format.fprintf f "cos(%a)" (bracket e) s
-    | SLog s ->  Format.fprintf f "ln(%a)" (bracket e) s
+    | SSin s ->  Format.fprintf f "sin(%a)" format_expr s
+    | SCos s ->  Format.fprintf f "cos(%a)" format_expr s
+    | SLog s ->  Format.fprintf f "ln(%a)" format_expr s
     | SE -> Format.fprintf f "e"
     | SPI  -> Format.fprintf f "pi"
 
@@ -85,6 +69,7 @@ let set_color = function
   | "yellow" -> "\027[38;5;3m"
   |   _     -> "\027[38;5;5m\027[0m"
 
+(*The following two functions are mostly taken directly from A4*)
 
 let print_tags = {
   Format.mark_open_tag   = set_color;
@@ -132,7 +117,7 @@ let print_help () =
    "
 
 let print_main_help () =
-   print "\027[38;5;1;1mThis is a symbolic computation program inspired by WolframAlpha
+   print "\027[38;5;1;1mThis is a Symbolic Computation System inspired by WolframAlpha
 
    The program has 3 main features: 
      *   Derivatives, Integration, Matrices
@@ -152,7 +137,6 @@ let print_main_help () =
     \027[38;5;1;1m
     Variables: Any combination of adjacent letters
     Reserved Variables: pi, e, c, [any word that is used as a command]
-
     Assignment: Typing [var] = [expr] assigns that expression to the variable
                 Typing 'clear' removes all previously made assignments.
                 EX: f = x^3 [ENTER] f + 2x => x^3 + 2x
@@ -167,6 +151,7 @@ let print_main_help () =
     * Natural Log:   log(e) => 1, log(x) => log(x)
     * Distribution:  (x+y)^2 => 2y*x+(y)^(2)+(x)^(2)
     * Substitution:  sub 3 for x in y*x^2 => 9y
+    * Previous Ans:  5x [ENTER] Ans + x => 6x
    
     To return to the main help menu, type MAIN
     OR press ENTER to return"
@@ -210,11 +195,11 @@ let print_main_help () =
     Semi Supported:
       Some By-Parts integration: Highlights: x*sin(2x), (e^x)*x, cos(x)*x^2
 
-    To denote an integral:
+    Notation:
       integrate [expr] wrt [var] EX: integrate x^3 wrt x => (1/3)x^3
-
-    Definite integrals are not explicitly supported but are easily solved for:
-      EX: To solve for the integral of x^3 from 5 to 3
+      Multivariable integration can be accomplished as follows:
+        integrate integrate x*y wrt x wrt y
+      Definite integrals are not explicitly supported but are easily solved for:
         f = integrate x^3 wrt x [ENTER] (sub 5 for x in f) - (sub 3 for x in f)
 
     To return to the main help menu, type MAIN

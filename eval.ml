@@ -3,7 +3,6 @@ open Simplify
 open Matrix
 open Derivative
 open Integral
-open Printer
 
 let prev = ref (SFloat 42.)
 let env = ref ([])
