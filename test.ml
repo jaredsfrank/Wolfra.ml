@@ -17,8 +17,6 @@ let eval_ast s = eval(parse_expr s)
 TEST "times Const" = evaluate "5x" = "5x"
 TEST "Basic times" = evaluate "x*y" = "x*y"
 
-(*NOTE:THIS IS ACTUALLY A GREAT WAY TO TEST.
-TESTING PROPERTIES JUST REQUIRES THAT THE TWO EQUIVALENT EXPRESSIONS EVLAUATE TO THE SAME VALUE*)
 TEST "Add Zero" = evaluate "x+0" = evaluate "x"
 TEST "Mult Zero" = evaluate "x*0" = evaluate "0"
 TEST "Mult One" = evaluate "x*1" = evaluate "x"
@@ -68,3 +66,8 @@ TEST "Derivative Exp" = evaluate "derive x^y wrt x" = "y*(x)^(y-1)"
 TEST "Derivative Times" = evaluate "derive x*sin(x) wrt x" = "sin(x)+x*cos(x)"
 
 TEST "Integration Simple" = evaluate "integrate 2*x^4 wrt x" = "(2/5)(x)^(5)+C"
+
+TEST "Matrix Simple" = evaluate "[1,a;pi,e]" = "[1,a;pi,e]"
+TEST "Matrix Eval all" = evaluate "[1+1,2+2;a+a,4/b]" = evaluate "[2,4;2a,4/b]"
+TEST "Matrix inverse" = evaluate "inverse [1,2,3;0,1,4;5,6,0]" = "[-24,18,5;20,-15,-4;-5,4,1]"
+TEST "Matrix Transpose" = evaluate "transpose [a,b;c,d]" = "[a,c;b,d]"
