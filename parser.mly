@@ -6,13 +6,7 @@ open Ast
 open Lexing
 
 let parse_error _ =
-  let start_pos = Parsing.symbol_start_pos () in
-  let end_pos = Parsing.symbol_end_pos () in
-  let start_line = string_of_int start_pos.pos_lnum in
-  let start_char = string_of_int (start_pos.pos_cnum - start_pos.pos_bol) in
-  let end_line = string_of_int end_pos.pos_lnum in
-  let end_char = string_of_int (end_pos.pos_cnum - end_pos.pos_bol) in
-  failwith ("Parse error: ("^start_line^"."^start_char^"-"^end_line^"."^end_char)
+  failwith ("Please enter in a proper expression")
 %}
 
 
@@ -96,7 +90,8 @@ expr:
   | DERIVE expr DERIV expr     { BinOp  (Deriv, $2, $4) }
   | expr PRIME expr     { BinOp  (Deriv, $1, $3) }
   | expr PRIME PRIME expr     {BinOp (Deriv,BinOp  (Deriv, $1, $4),$4)}
-  | expr PRIME PRIME PRIME expr     {BinOp(Deriv,BinOp (Deriv,BinOp  (Deriv, $1, $5),$5), $5)}
+  | expr PRIME PRIME PRIME expr     {BinOp(Deriv,BinOp (Deriv,BinOp  
+                                                       (Deriv, $1, $5),$5), $5)}
   | DERIVE2 expr DERIV2 expr     { BinOp  (Deriv, $2, $4) }
   | INTEGRATE expr DERIV expr     { BinOp  (Integrate, $2, $4) }
   | VAR    { Var $1 }

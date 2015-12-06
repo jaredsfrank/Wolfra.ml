@@ -5,10 +5,14 @@ let rec is_constant x' = function
     | SFloat f -> true
     | SVar x when x = x' -> false
     | SVar x  -> true
-    | STimes (c, l) -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
-    | SPlus l -> List.fold_left (fun accum a -> accum && is_constant x' a) true l
+    | STimes (c, l) -> List.fold_left 
+                      (fun accum a -> accum && is_constant x' a) true l
+    | SPlus l       -> List.fold_left 
+                      (fun accum a -> accum && is_constant x' a) true l
     | SPow (e1, e2) -> is_constant x' e1 && is_constant x' e2
-    | SMatrix l -> List.fold_left (fun accum l' -> accum && List.fold_left (fun accum a -> accum && is_constant x' a) true l') true l
+    | SMatrix l     -> List.fold_left (fun accum l' -> accum && 
+                       List.fold_left 
+                     (fun accum a -> accum && is_constant x' a) true l') true l
     | SSin e -> is_constant x' e
     | SCos e -> is_constant x' e
     | SLog e -> is_constant x' e

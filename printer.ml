@@ -3,58 +3,78 @@ open Fractions
 
 let string_of_floats f =
     let s = string_of_float f in
-    if String.get s ((String.length s)-1) = '.' then String.sub s 0 ((String.length s)-1)
+    if String.get s ((String.length s)-1) = '.' 
+    then 
+        String.sub s 0 ((String.length s)-1)
     else s
 
 
 let rec format_expr f e = 
-    let rec print_list f = function
-        | [] -> Format.fprintf f ""
-        | [h] -> Format.fprintf f "%a" format_expr h
-        | h::t -> Format.fprintf f "%a,%a" format_expr h (print_list) t
-    in
-    let rec print_list_list f = function
-        | [] -> Format.fprintf f ""
-        | [h] -> Format.fprintf f "%a" print_list h
-        | h::t -> Format.fprintf f "%a;%a" print_list h (print_list_list) t
-    in
-    let print_frac f d = 
-      match is_int d with
-      | true -> Format.fprintf f "%s" (string_of_floats d)
-      | false -> let (num, den) = frac d in
-                if is_int ((float_of_int den)/.10000.) then Format.fprintf f "%s" (string_of_floats d) else
-                 Format.fprintf f "(%s/%s)" (string_of_int num) (string_of_int den)
-    in
-    match e with
-    | SFloat n -> print_frac f n
-    | SVar x -> Format.fprintf f "%s" x
-    | STimes (c,[]) -> Format.fprintf f "%a" (print_frac) c
-    | STimes (1.,[h]) -> Format.fprintf f "%a" format_expr h
-    | STimes (-1.,[h]) -> Format.fprintf f "-%a" format_expr h
-    | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" (print_frac) c format_expr x
-    | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c format_expr h
-    | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" format_expr h format_expr (STimes (1.,e::t))
-    | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" format_expr h format_expr (STimes (1.,e::t))
-    | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" (print_frac) c format_expr h format_expr (STimes (1.,e::t))
-    | STimes (-1., h::t) -> Format.fprintf f "-%a*%a" format_expr h format_expr (STimes (1.,t))
-    | STimes (1., h::t) -> Format.fprintf f "%a*%a" format_expr h format_expr (STimes (1.,t))
-    | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c format_expr h format_expr (STimes (1.,t))
-    | SPlus [] -> Format.fprintf f ""
-    | SPlus [h] -> Format.fprintf f "%a" format_expr h
-    | SPlus (h1::h2::t) -> (match h2 with 
-                              | SFloat x when x<0. -> Format.fprintf f "%a-%a" format_expr h1 format_expr (SPlus ((SFloat (-1.*.x))::t))
-                              | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a" format_expr h1 format_expr (SPlus (STimes (-1.*.c,x)::t))
-                              | _ -> Format.fprintf f "%a+%a" format_expr h1 format_expr (SPlus( h2::t)))
-    | SPow (s1,SFloat (-1.)) -> Format.fprintf f "(1/%a)" format_expr s1
-    | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" format_expr s1 format_expr s2
-    | SMatrix []  -> Format.fprintf f ""
-    | SMatrix [h] -> Format.fprintf f "[%a]" print_list h
-    | SMatrix (h::t) -> Format.fprintf f "[%a;%a]" print_list h print_list_list t
-    | SSin s ->  Format.fprintf f "sin(%a)" format_expr s
-    | SCos s ->  Format.fprintf f "cos(%a)" format_expr s
-    | SLog s ->  Format.fprintf f "ln(%a)" format_expr s
-    | SE -> Format.fprintf f "e"
-    | SPI  -> Format.fprintf f "pi"
+  let rec print_list f = function
+      | [] -> Format.fprintf f ""
+      | [h] -> Format.fprintf f "%a" format_expr h
+      | h::t -> Format.fprintf f "%a,%a" format_expr h (print_list) t
+  in
+  let rec print_list_list f = function
+      | [] -> Format.fprintf f ""
+      | [h] -> Format.fprintf f "%a" print_list h
+      | h::t -> Format.fprintf f "%a;%a" print_list h (print_list_list) t
+  in
+  let print_frac f d = 
+    match is_int d with
+    | true -> Format.fprintf f "%s" (string_of_floats d)
+    | false -> let (num, den) = frac d in
+               if is_int ((float_of_int den)/.10000.) 
+               then Format.fprintf f "%s" (string_of_floats d) else
+                Format.fprintf f"(%s/%s)"(string_of_int num) (string_of_int den)
+  in
+  match e with
+  | SFloat n -> print_frac f n
+  | SVar x -> Format.fprintf f "%s" x
+  | STimes (c,[]) -> Format.fprintf f "%a" (print_frac) c
+  | STimes (1.,[h]) -> Format.fprintf f "%a" format_expr h
+  | STimes (-1.,[h]) -> Format.fprintf f "-%a" format_expr h
+  | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" 
+                                          (print_frac) c format_expr x
+  | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c format_expr h
+  | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" 
+                                                  format_expr h 
+                                                  format_expr (STimes (1.,e::t))
+  | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" 
+                                                  format_expr h 
+                                                  format_expr (STimes (1.,e::t))
+  | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" 
+                                                  (print_frac) c 
+                                                  format_expr h 
+                                                  format_expr (STimes (1.,e::t))
+  | STimes (-1., h::t) -> Format.fprintf f "-%a*%a" format_expr h 
+                                                    format_expr (STimes (1.,t))
+  | STimes (1., h::t) -> Format.fprintf f "%a*%a" format_expr h 
+                                                  format_expr (STimes (1.,t))
+  | STimes (c, h::t) -> Format.fprintf f "%a%a*%a" (print_frac) c 
+                                                    format_expr h 
+                                                    format_expr (STimes (1.,t))
+  | SPlus [] -> Format.fprintf f ""
+  | SPlus [h] -> Format.fprintf f "%a" format_expr h
+  | SPlus (h1::h2::t) -> (match h2 with 
+                            | SFloat x when x<0. -> Format.fprintf f "%a-%a" 
+                                                   format_expr h1 format_expr 
+                                                  (SPlus ((SFloat (-1.*.x))::t))
+                            | STimes (c,x) when c<0. -> Format.fprintf f "%a-%a"
+                                                     format_expr h1 format_expr 
+                                                  (SPlus (STimes (-1.*.c,x)::t))
+                            | _ -> Format.fprintf f "%a+%a" 
+                                    format_expr h1 format_expr (SPlus( h2::t)))
+  | SPow (s1,SFloat (-1.)) -> Format.fprintf f "(1/%a)" format_expr s1
+  | SPow (s1,s2) -> Format.fprintf f "(%a)^(%a)" format_expr s1 format_expr s2
+  | SMatrix []  -> Format.fprintf f ""
+  | SMatrix [h] -> Format.fprintf f "[%a]" print_list h
+  | SMatrix (h::t) -> Format.fprintf f "[%a;%a]" print_list h print_list_list t
+  | SSin s ->  Format.fprintf f "sin(%a)" format_expr s
+  | SCos s ->  Format.fprintf f "cos(%a)" format_expr s
+  | SLog s ->  Format.fprintf f "ln(%a)" format_expr s
+  | SE -> Format.fprintf f "e"
+  | SPI  -> Format.fprintf f "pi"
 
 
 
@@ -116,8 +136,8 @@ let print_help () =
    "
 
 let print_main_help () =
-   print "\027[38;5;1;1mThis is a Symbolic Computation System inspired by WolframAlpha
-
+   print 
+   "\027[38;5;1;1mThis is a Symbolic Computation System inspired by WolframAlpha
    The program has 3 main features: 
      *   Derivatives, Integration, Matrices
 
@@ -127,9 +147,13 @@ let print_main_help () =
       *  Integrals
       *  Matrices
 
-     OR press ENTER to return
+    QUICK START: Enter         '(x+y)^2'      to see some simplification magic
+                 Enter  'integrate x^2 wrt x' to see some integration magic
+                 Enter  '[a,b;c,d]+[e,f;g,h]' to see some matrix magic
 
+   press ENTER to return
   "
+
 
   let print_basic_help () =
     print "\027[38;5;3m BASIC OPERATION

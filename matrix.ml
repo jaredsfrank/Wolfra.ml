@@ -3,7 +3,7 @@ open Simplify
 
 (* Checks two matrices' lists to make sure their dimensions are the same*)
 let rec check_dimension =
-    List.fold_left2 (fun accum a b -> accum && List.length a = List.length b) true
+  List.fold_left2 (fun accum a b -> accum && List.length a = List.length b) true
 
 
 let is_square m = 
@@ -12,14 +12,17 @@ let is_square m =
 let is_rect m =
   match m with
   | [] -> true
-  | h::t -> List.fold_left (fun b l -> (List.length l = List.length h) && b) true m
+  | h::t -> List.fold_left 
+            (fun b l -> (List.length l = List.length h) && b) true m
 
 
-(*Creates the s_expr list list of dimensions row col with expression f in every position*)
+(*Creates the s_expr list list of dimensions row col with expression 
+* f in every position*)
 let create_matrix row col f =
     let rec make_rows c acc = if c = 0 then acc else make_rows (c-1) (f::acc) in
     let rows = make_rows col [] in
-    let rec combine_rows r acc = if r = 0 then acc else combine_rows (r-1) (rows::acc) in
+    let rec combine_rows r acc = if r = 0 then acc 
+                                          else combine_rows (r-1) (rows::acc) in
     combine_rows row []
 
 (*Creates the identity matrix of size nxn, matrix should be an empty matrix*)
@@ -47,8 +50,10 @@ let remove m i =
 let rec determinant m =
   let rec helper i = function
     | [] -> SFloat 0.
-    | h::t when i mod 2 = 0-> plus(times (h, determinant (remove m i)),(helper (i+1) t))
-    | h::t -> plus(s_times [SFloat (-1.); h; determinant (remove m i)],(helper (i+1) t)) in
+    | h::t when i mod 2 = 0-> plus(times (h, determinant (remove m i))
+                                  ,(helper (i+1) t))
+    | h::t -> plus(s_times [SFloat (-1.); h; determinant (remove m i)],
+              (helper (i+1) t)) in
   match m with
     | [] -> SFloat 1.
     | h::t -> helper 0 h 
@@ -57,10 +62,12 @@ let rec determinant m =
 let rec trans_matrix = function
   | [] -> []
   | []::t -> trans_matrix t
-  | (h::t1)::t2 -> (h::(List.map List.hd t2))::trans_matrix (t1::(List.map List.tl t2))
+  | (h::t1)::t2 -> (h::(List.map List.hd t2))
+                    ::trans_matrix (t1::(List.map List.tl t2))
 
 
-let dot l1 l2 = List.fold_left2 (fun accum a b -> plus(accum,times (a,b))) (SFloat 0.) l1 l2 
+let dot l1 l2 = List.fold_left2 (fun accum a b -> plus(accum,times (a,b))) 
+                                (SFloat 0.) l1 l2 
 
 let dot_matrices m1 m2 = 
   try List.map (fun l -> List.map (dot l) m1) m2
@@ -69,15 +76,21 @@ let dot_matrices m1 m2 =
 
 let rec matrix_times (e1,e2) = 
   match (e1, e2) with
-  | SFloat _, SMatrix m    -> SMatrix (List.map (fun l -> List.map (fun x -> times (x,e1)) l) m)
+  | SFloat _, SMatrix m    -> SMatrix (List.map 
+                                (fun l -> List.map (fun x -> times (x,e1)) l) m)
   | SMatrix m, SFloat _    -> matrix_times (e2, e1)
-  | SMatrix m1, SMatrix m2 -> SMatrix (trans_matrix(dot_matrices m1 (trans_matrix m2)))
+  | SMatrix m1, SMatrix m2 -> SMatrix 
+                              (trans_matrix(dot_matrices m1 (trans_matrix m2)))
   | _, _                   -> failwith "Error"
 
 and matrix_plus = function
-  | SMatrix m, SFloat f -> SMatrix (List.map (fun l -> List.map (fun x -> plus (x,SFloat f)) l) m)
+  | SMatrix m, SFloat f -> SMatrix (List.map 
+                          (fun l -> List.map (fun x -> plus (x,SFloat f)) l) m)
   | SFloat f, SMatrix m -> plus (SMatrix m, SFloat f)
-  | SMatrix m, SMatrix n when check_dimension m n->  SMatrix(List.map2 (fun l1 l2 -> List.map2 (fun a b -> plus(a,b)) l1 l2) m n)
+  | SMatrix m, SMatrix n 
+          when check_dimension m n-> SMatrix
+                                     (List.map2 (fun l1 l2 -> 
+                                    List.map2 (fun a b -> plus(a,b)) l1 l2) m n)
   | _,_ -> failwith "Error"
 
 (*Swaps rows i and j of a matrix. if i=j then the matrix stays the same*)
@@ -113,14 +126,16 @@ let rref m =
       done;
       n:=swap_rows !n !i r;
       let lv = (List.nth (List.nth !n r) !lead) in
-      let mr = List.map (fun v -> times(v, pow(lv,SFloat (-1.)))) (List.nth !n r) in
+      let mr = List.map 
+                    (fun v -> times(v, pow(lv,SFloat (-1.))))(List.nth !n r) in
       n:=[mr]@(!n);
       n:= swap_rows !n 0 (r+1);
       n:= List.tl !n;
       for i = 0 to pred rows do
         if i <> r then
           let lv = (List.nth (List.nth !n i) !lead) in
-          let mi = List.mapi (fun i iv -> plus(iv,times(times(lv,SFloat (-1.)),(List.nth (List.nth !n r) i)))) (List.nth !n i) in
+          let mi = List.mapi (fun i iv -> plus(iv,times(times(lv,SFloat (-1.)),
+                              (List.nth (List.nth !n r) i)))) (List.nth !n i) in
           n:= [mi]@(!n);
           n:= swap_rows !n 0 (i+1);
           n:= List.tl !n;
@@ -146,12 +161,18 @@ let inv_matrix m =
     List.map (fun x -> helper2 x 0) reduced
     
 let quadratic a b c =
-  let discrim = plus(pow(b,SFloat 2.),times(SFloat (-1.),times(SFloat 4.,times(a,c)))) in
+  let discrim = plus(pow(b,SFloat 2.),
+                    times(SFloat (-1.),times(SFloat 4.,times(a,c)))) in
   match discrim with
-  | SFloat i -> if i < 0. then failwith "Error: Wolfra.ml does not support complex solutions"
-                else (times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),pow(discrim,SFloat (0.5)))) ,
-                      times(pow(times(a,SFloat 2.),SFloat (-1.)),plus(times(b,SFloat (-1.)),times(SFloat (-1.),pow(discrim,SFloat (0.5))))))
-  | _ -> failwith "Error"
+  | SFloat i -> if i < 0. then failwith
+                           "Error: Wolfra.ml does not support complex solutions"
+                else (times(pow(times(a,SFloat 2.),SFloat (-1.)),
+                         plus(times(b,SFloat (-1.)),pow(discrim,SFloat (0.5)))),
+                      times(pow(times(a,SFloat 2.),SFloat (-1.)),
+                            plus(times(b,SFloat (-1.)),times(SFloat (-1.),
+                                pow(discrim,SFloat (0.5))))))
+  | _ -> failwith ("Error: Wolfra.ml only supports eigenvalues for matrices of"^
+                  " solely floats")
 
 let eigenv m =
     if (is_square m) && (List.length m = 2) then

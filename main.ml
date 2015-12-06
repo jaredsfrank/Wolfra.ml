@@ -11,13 +11,14 @@ let rec main () =
         match result with
         | "quit" -> print "Done. Press enter to leave"; ()
         | "clear" -> env := []; print "";main()
-        | "help" -> let _ = Sys.command "clear" in print_help (); print_main_help (); help_menu ()
+        | "help" -> let _ = Sys.command "clear" in print_help (); 
+                            print_main_help (); help_menu ()
         | s -> let e =  (eval (parse_expr s)) in
                 print_expr e; 
                 prev := e; main()
     with
-    | Stack_overflow -> print "Wolfra.ml does not support that type of integration!"; main ()
-    | Failure "Parse error: (1.0-1.1" -> print "Please enter in a proper expression"; main ()
+    | Stack_overflow -> print ("Wolfra.ml does not support that"^
+                              " type of integration!"); main ()
     | Failure s -> print s; main ()
     | _  -> print "Error"; main()
 
