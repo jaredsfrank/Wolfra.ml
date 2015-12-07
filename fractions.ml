@@ -38,10 +38,12 @@ let round x =
   | n             -> int_of_float x
 
 let rep_frac (i,f) a = 
+  let multiplier = if a < 0. then -1 else 1 in
+  let a = abs_float a in
   let lhs = round (10.**f -. 10.**i) in
   let rhs = round ((10.**f)*.a -. (10.**i)*.a) in
   let gcd' = gcd (lhs, rhs) in
-  (rhs/gcd', lhs/gcd')
+  (multiplier*rhs/gcd', lhs/gcd')
 
 
 let frac a = 
