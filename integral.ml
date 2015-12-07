@@ -25,8 +25,8 @@ let sin_integration x x' =
  | SPI | SE -> times(sin_function x, SVar x')
  | SVar v when v = x'-> times(SFloat (-1.),cos_function x)
  | SVar v when v <> x'-> times(sin_function x, SVar x')
- | STimes(f, [SVar v]) when v=x' ->divide(cos_function(x),times(SFloat (-1.), SFloat f))
- | STimes(f, [SVar v]) when v<>x' -> times(sin_function x, SVar x')
+ | STimes(f, [SVar v]) when v=x' ->divide(SCos(x),times(SFloat (-1.), SFloat f))
+ | STimes(f, [SVar v]) when v<>x' -> times(SSin x, SVar x')
  | STimes(f, SVar v1::[SVar v2]) when v1=x' ->
                            times(pow(s_times(SFloat f::[SVar v2]),SFloat (-1.)),
                            times(SFloat (-1.),cos_function x))
@@ -78,7 +78,7 @@ let rec integrate s1 s2 =
  | SVar x, SVar x' -> if (x=x') then (times(SFloat 0.5, pow(s1, SFloat 2.)))
                       else times(s1, s2)
  | STimes (c,[h]), SVar _   -> times(SFloat c, integrate h s2)
- | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (sin_function x) s2
+ | STimes (c,(SSin x)::t), SVar _ -> by_parts (STimes(c,t)) (SSin x) s2
  | STimes (c,(SCos x)::t), SVar _ -> by_parts (STimes(c,t)) (cos_function x) s2
  | STimes (c,(SPow(SE, x))::t), SVar _ ->by_parts (STimes(c,t)) (SPow(SE, x)) s2
  | STimes (c,h::t), SVar _ -> by_parts h (STimes(c,t)) s2

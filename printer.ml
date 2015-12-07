@@ -120,10 +120,8 @@ let print_intro () =
              \\_/\\_/ \\___/|_|_| |_|  \\__,_(_)_| |_| |_|_|@}";
  print_form "\n\n\n@{<red> Welcome to Wolfra.ml!
  Type help at any time for the help function. Type quit to exit the program.
-
  Copyright (c) 2015 Wolfra.ml Industries
  All Rights Reserved
-
  This product is protected by copyright and distributed under
  licenses restricting copying, distribution and decompilation.@}"
 
@@ -144,17 +142,14 @@ let print_main_help () =
    "@{<red>This is a Symbolic Computation System inspired by WolframAlpha
    The program has 3 main features: 
      *   Derivatives, Integration, Matrices
-
      Type one of the following to learn more:
       *  Basic Operation
       *  Derivatives
       *  Integrals
       *  Matrices
-
     QUICK START: Enter         '(x+y)^2'      to see some simplification magic
                  Enter  'integrate x^2 wrt x' to see some integration magic
                  Enter  '[a,b;c,d]+[e,f;g,h]' to see some matrix magic
-
    press ENTER to return@}
   "
 
@@ -167,7 +162,6 @@ let print_main_help () =
     Assignment: Typing [var] = [expr] assigns that expression to the variable
                 Typing 'clear' removes all previously made assignments.
                 EX: f = x^3 [ENTER] f + 2x => x^3 + 2x
-
     Example Entries and Results (Signified by =>)
     * Multiplication:3*5 => 15,  x*y => x*y, 3x => 3x
     * Addition:      3+5 => 8,   x+y => x+y, 2*x - x => x
@@ -187,7 +181,6 @@ let print_main_help () =
     print_form "@{<yellow> DERIVATIVES@}
     @{<red>
     Derivatives for all types of expressions are fully functional
-
     There are 3 notations for denoting a derivative:
     (1) derive [expr] wrt [var]
         EX: derive x^3 wrt x => 3x^2
@@ -198,18 +191,14 @@ let print_main_help () =
         f'(x) = 5x^4
         f''(x) = 20x^3
         f'''(x) = 60x^2
-
     More Complex Example
       derive x^y*cos(x) wrt x => y*(x)^(y-1)*cos(x)-sin(x)*(x)^(y)
-
-
-
     To return to the main help menu, type MAIN
     OR press ENTER to return@}"
 
   let print_integ_help () =
     print_form "@{<yellow> INTEGRALS@}
-    @{<red>
+    {@<red>
     Integrals are currently in beta...not fully functional.
     Fully supported integrals:
       (where [c] represents any non-variable expr
@@ -221,28 +210,24 @@ let print_main_help () =
       or that may lead to inverse trig.
     Semi Supported:
       Some By-Parts integration: Highlights: x*sin(2x), (e^x)*x, cos(x)*x^2
-
     Notation:
       integrate [expr] wrt [var] EX: integrate x^3 wrt x => (1/3)x^3
       Multivariable integration can be accomplished as follows:
         integrate integrate x*y wrt x wrt y
       Definite integrals are not explicitly supported but are easily solved for:
         f = integrate x^3 wrt x [ENTER] (sub 5 for x in f) - (sub 3 for x in f)
-
     To return to the main help menu, type MAIN
     OR press ENTER to return@}"
 
   let print_matr_help () =
-    print_form "@{<yellow> MATRICES@}
+    print_form "{@<yellow> MATRICES@}
     @{<red>
     Matrices are denoted in the following way:
       Columns are separated by commaas. Rows are separated by semicolons
       EX: To express [1 3], write [1,3;5,6] 
                      [5 6]
-
     Vectors are denoted by a list of expressions separated by semicolons
       EX: 3i + 5j + 6k is written as [3;5;6]
-
     Multiplication: [1,2;3,4] * [a,b;c,d] => [a+2c,b+2d;3a+4c,3b+4d]
     Addition:       [1,2;3,4] + [a,b;c,d] => [1+a,2+b;3+c,4+d]
     Transpose:      [a,b;c,d] => [a,c;b,d]
@@ -252,8 +237,6 @@ let print_main_help () =
     EigenValues: (Only 2x2) are supported
       EX: eigenvalue [2,7;-1,6] => [lambda;1,-5]
         This result represnts the two eigenvalues: 1, and -5
-
-
     To return to the main help menu, type MAIN
     OR press ENTER to return@}"
 
