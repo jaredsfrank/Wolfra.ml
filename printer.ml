@@ -34,16 +34,16 @@ let rec format_expr f e =
   | STimes (c,[]) -> Format.fprintf f "%a" (print_frac) c
   | STimes (1.,[h]) -> Format.fprintf f "%a" format_expr h
   | STimes (-1.,[h]) -> Format.fprintf f "-%a" format_expr h
-  | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/%a" 
+  | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/(%a)" 
                                           (print_frac) c format_expr x
   | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c format_expr h
   | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" 
                                                   format_expr h 
                                                   format_expr (STimes (1.,e::t))
-  | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" 
+  | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/%a" 
                                                   format_expr h 
                                                   format_expr (STimes (1.,e::t))
-  | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/(%a)" 
+  | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/%a" 
                                                   (print_frac) c 
                                                   format_expr h 
                                                   format_expr (STimes (1.,e::t))
@@ -198,7 +198,7 @@ let print_main_help () =
 
   let print_integ_help () =
     print_form "@{<yellow> INTEGRALS@}
-    {@<red>
+    @{<red>
     Integrals are currently in beta...not fully functional.
     Fully supported integrals:
       (where [c] represents any non-variable expr
@@ -220,7 +220,7 @@ let print_main_help () =
     OR press ENTER to return@}"
 
   let print_matr_help () =
-    print_form "{@<yellow> MATRICES@}
+    print_form "@{<yellow> MATRICES@}
     @{<red>
     Matrices are denoted in the following way:
       Columns are separated by commaas. Rows are separated by semicolons

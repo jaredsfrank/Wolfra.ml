@@ -7,10 +7,10 @@ open Integral
 let prev = ref (SFloat 42.)
 let env = ref ([])
 
-let rec subst ((k,v): string * float ) e =
+let rec subst ((k,v): string * s_expr ) e =
   match e with
   | SFloat f            ->  e
-  | SVar x' when x' = k -> SFloat v
+  | SVar x' when x' = k -> v
   | SVar x              -> e
   | STimes (c, [])      -> SFloat c
   | STimes (c, h::t)    -> times(subst (k,v) h, subst (k,v) (STimes(c,t)))
@@ -79,8 +79,7 @@ let rec eval = function
     | UnOp   (op, e)          -> un_op op (eval e)
     | Matrix m when is_rect m -> SMatrix (List.map (fun l -> List.map eval l) m)
     | Matrix m                -> failwith "Error: Matrix must be rectangular"
-    | Subst  (Float f,Var v,e)      -> subst (v,f) (eval e)
-    | Subst (Var v, Float f, e)     -> subst (v,f) (eval e)
+    | Subst (x, Var v, e)     -> subst (v,eval x) (eval e)
     | Subst (_)               -> failwith "Error: Improper substitution"
     | E                       -> SE
     | PI                      -> SPI
