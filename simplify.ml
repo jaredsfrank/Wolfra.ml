@@ -80,6 +80,7 @@ and pow = function
                             (times (SPlus l, pow (SPlus l, SFloat (f-.1.))))
   | STimes (c,[h]), x -> times(pow(SFloat c,x),pow(h,x))
   | STimes (c,h::t), x -> times(pow(h,x),pow(STimes (c,t),x))
+  | SPow(x,y), s                    -> pow(x, times(s,y))
   | s1, s2   -> SPow (s1, s2)
 
 
