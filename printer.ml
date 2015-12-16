@@ -37,10 +37,10 @@ let rec format_expr f e =
   | STimes (c,[SPow(x, SFloat (-1.))]) -> Format.fprintf f "%a/(%a)" 
                                           (print_frac) c format_expr x
   | STimes (c,[h]) -> Format.fprintf f "%a%a" (print_frac) c format_expr h
-  | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/(%a)" 
+  | STimes (-1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "-%a/%a" 
                                                   format_expr h 
                                                   format_expr (STimes (1.,e::t))
-  | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/%a" 
+  | STimes (1., h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a/(%a)" 
                                                   format_expr h 
                                                   format_expr (STimes (1.,e::t))
   | STimes (c, h::(SPow (e, SFloat (-1.)))::t) -> Format.fprintf f "%a%a/%a" 
